@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <h1> Catan </h1>
+    <button v-on:click="start_game"> Start </button>
+    <button v-on:click="stop_game"> Stop </button>
     <connect v-on:connect="connect"/>
     <board :json="board_data"/>
   </div>
@@ -49,7 +51,17 @@ export default {
         this.socket.close();
         delete this.socket;
       }
-    }
+    },
+    start_game: function() {
+      if (this.socket) {
+          this.socket.send("START");
+      }
+    },
+    stop_game: function() {
+        if (this.socket) {
+            this.socket.send("STOP");
+        }
+    },
   }
 }
 </script>
