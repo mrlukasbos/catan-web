@@ -2,22 +2,28 @@
   <div id="app">
     <h1> Catan </h1>
     <connect v-on:connect="connect"/>
+    <board :json="board_data"/>
   </div>
 </template>
 
 <script>
 import connect from './components/connect.vue'
+import board from './components/board.vue'
 
 export default {
   name: 'App',
   components: {
-    connect
+    connect,
+    board
   },
+
   data: function() {
     return {
-      socket: null
+      socket: null,
+      board_data: null,
     }
   },
+
   methods: {
     connect: function(ip, port) {
       this.kill_socket();
@@ -26,13 +32,16 @@ export default {
       this.socket.onerror = (err) => {
         alert("connection error " + err)
       }
+
       this.socket.onclose = () => {
           this.kill_socket();
       }
-      this.socket.onopen = () => {   
-      }
+
+      this.socket.onopen = () => {}
+      
       this.socket.onmessage = (data) => {
-        console.log(data);
+        var message = data.data.toString();
+        this.board_data = JSON.parse(message);
       }
     },
     kill_socket: function () {
@@ -46,6 +55,16 @@ export default {
 </script>
 
 <style>
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+}
+
 #app {
   font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -87,6 +106,208 @@ input {
 input:focus {
     transition: all .5s;
     color: black;
+}
+
+
+
+.resource {
+    border: .5px solid gainsboro;
+}
+
+.info {
+    background-color: aliceblue;
+    height: 100vh;
+    color: black;
+    width: 20%;
+    min-width: 300px;
+}
+
+.board {
+    display: block;
+    flex-direction: column;
+}
+
+
+.hexagon {
+    fill: white;
+    pointer-events: all;
+}
+
+.hexagon .DESERT {
+    fill: sandybrown;
+}
+
+.WOOL {
+    fill: lawngreen;
+    background-color: lawngreen;
+    color: black;
+}
+
+.WOOD {
+    fill: forestgreen;
+    background-color: forestgreen;
+    color: white;
+}
+
+.STONE {
+    fill: rosybrown;
+    background-color: rosybrown;
+    color: white;
+}
+
+.GRAIN {
+    fill: khaki;
+    background-color: khaki;
+    color: black;
+}
+
+.ORE {
+    fill: lightgray;
+    background-color: lightgray;
+    color: black;
+}
+
+.hexagon .SEA {
+    fill: lightskyblue;
+}
+
+.hexagon .HARBOUR_WOOL,
+.hexagon .HARBOUR_WOOD,
+.hexagon .HARBOUR_STONE,
+.hexagon .HARBOUR_GRAIN,
+.hexagon .HARBOUR_ORE,
+.hexagon .HARBOUR_ALL {
+    fill: lightskyblue;
+}
+
+.mesh {
+    fill: none;
+    pointer-events: none;
+    display: none;
+}
+
+.border {
+    stroke-width: 7px;
+    pointer-events: visible;
+    cursor: pointer;
+    transition: opacity .3s, stroke-width .3s;
+    stroke-linecap: round;
+}
+
+.border:hover {
+    stroke-width: 12px;
+}
+
+.border--empty {
+    opacity: .5;
+}
+
+.border--empty:hover {
+    opacity: .75;
+}
+
+.harbour-edge {
+    opacity: .6;
+    stroke-width: 16px;
+    stroke-linecap: round;
+}
+
+.numbers {
+    font-size: 25px;
+}
+
+.events {
+    font-weight: 100;
+    overflow-y: scroll;
+    font-size: .8rem;
+}
+
+.resource-txt {
+    padding: 4px;
+    border-radius: 2px;
+    font-weight: 600;
+    margin-right: 4px;
+    font-size: .7rem;
+}
+
+.node {
+    stroke: #000;
+}
+
+.node--empty {
+    fill: #fff;
+    stroke: #fff;
+    opacity: .4;
+    transition: opacity .3s;
+    transition: stroke-width .3s;
+}
+
+.node--empty:hover {
+    opacity: .75;
+    cursor: pointer;
+    stroke-width: 5px;
+}
+
+.tile {
+    opacity: 1;
+    transition: opacity .3s;
+}
+
+.tile:hover {
+    cursor: pointer;
+    opacity: .5;
+}
+
+.modal {
+    width: 100vw;
+    height: 100vw;
+    background-color: rgba(200, 200, 200, 0.5);
+    position:fixed;
+    visibility: hidden;
+    transition: visibility .3s, opacity .3s;
+    opacity: 0;
+}
+
+.modal.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-body {
+    margin-top: 20%;
+    padding: 30px;
+    padding-left: 330px;
+    background-color: white;
+}
+
+.fancy-input {
+    border-bottom: 3px solid steelblue;
+    outline: none;
+    background-color: none;
+    font-size: x-large;
+    padding-left: 20px;
+    padding-bottom: 30px;
+    padding-top: 30px;
+    color: steelblue;
+}
+
+.fancy-input:focus {
+    border-bottom: 3px solid blueviolet;
+    transition: all .5s;
+    color: blueviolet;
+}
+
+.color-squares {
+    display: inline-flex;
+}
+
+.color-square {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #efefef;
+    border-radius: 2px;
+    margin: 4px;
+    transition: border .5s;
 }
 
 

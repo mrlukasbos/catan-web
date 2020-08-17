@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "d3": "^3.5.17",
+    "d3-geo": "^1.12.1",
+    "jquery": "^3.5.1",
+    "topojson-client": "^3.1.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
