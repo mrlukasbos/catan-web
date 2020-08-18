@@ -230,15 +230,11 @@ input:focus {
 }
 
 .labels { 
-    visibility: hidden;
-    display: none;
     font-size: 12px;
     pointer-events: none;
 }
 
 .types { 
-    visibility: hidden;
-    display: none;
     font-size: 16px;
     pointer-events: none;
 }
