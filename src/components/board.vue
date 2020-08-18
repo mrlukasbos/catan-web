@@ -1,6 +1,7 @@
 <template>
   <div class="board"> 
-    <div id="d3-holder"></div>
+    <div id="d3-board-holder"></div>
+    <div id="d3-game-holder"></div>
   </div>
 </template>
 
@@ -23,6 +24,8 @@ export default {
         nodes: [],
         bandits: [],
         players: [],
+        svg_board: null,
+        svg_game: null,
       }
   },
 
@@ -46,7 +49,11 @@ export default {
       this.nodes = board.nodes;
       this.bandits = board.bandits;
       this.players = this.json.attributes.players;
-      this.draw_board();
+      if (!this.svg) {
+
+        this.draw_board();
+      } 
+      this.draw_game();
     },
     lang: function() {
       this.draw_board();
@@ -163,14 +170,97 @@ export default {
       };
     },
 
-    draw_board: function() {
-      d3.select("svg").remove();
-      var self = this;
+    draw_game: function() {
 
+        if (this.svg_game) this.svg_game.remove();
 
-      var svg = d3.select("#d3-holder").append("svg")
+        this.svg_game = d3.select("#d3-game-holder").append("svg")
           .attr("width", this.width)
           .attr("height", this.height);
+
+      let self = this;
+        this.svg_game.append("g")
+            .attr("class", "borders")
+            .selectAll("path")
+            .data(self.edges)
+            .enter().append("path")
+            .attr("stroke", function (d) {
+              if (d.attributes.road) {
+                return d.attributes.player_color;
+              } 
+              return "#fff";
+            })
+            .attr("class", function (d) {
+              if (d.attributes.road) {
+                return "border border--road"
+              } else {
+                return "border border--empty"
+              }
+            })
+            .attr("d", function (d) {
+                return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
+                  var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+                  var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
+                  return (edge1 == d || edge2 == d);
+                }))
+            })
+            .on("click", function(d) { self.click_edge(d.attributes) });
+
+        this.svg_game.append("g")
+            .attr("class", "nodes")
+            .selectAll("path")
+            .data(self.nodes.map(function(n) {
+                return n.attributes;
+            }))
+            .enter().append("path")
+            .attr("transform", function (d) {
+                var coordinate = self.path.centroid(topojson.merge(self.topology, [
+                    self.getHexByKey(d.t_key),
+                    self.getHexByKey(d.l_key),
+                    self.getHexByKey(d.r_key)
+                ]));
+                return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+            })
+            .attr("d", function (d) {
+                if (d.structure == "VILLAGE") {
+                    return "M0 -10 L10 -2 L10 10 L-10 10 L-10 -2 L0 -10 Z"
+                } else if (d.structure == "CITY") {
+                    return "M-12 -2 L1 -2 L1 -10 L6 -12 L11 -10 L11 12 L-12 12 L-12 -2 Z"
+                } else {
+                    return "m -7.5, 0 a 7.5,7.5 0 1,0 15,0 a 7.5,7.5 0 1,0 -15,0"
+                }
+            }).attr('fill', function (d) {
+                return d.player_color;
+            }).attr("class", function(d) {
+                if (d.structure == "VILLAGE") {
+                    return "node node--village"
+                } else if (d.structure == "CITY") {
+                    return "node node--city"
+                } 
+                return "node node--empty"
+            })
+            .on("click", function(d) { self.click_node(d) });
+
+        this.svg_game.append("g")
+            .attr("class", "bandits")
+            .selectAll("path")
+            .data(self.bandits)
+            .enter().append("path")
+            .attr("transform", function (d) {
+              var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+            })
+            .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");   
+      },
+      draw_board: function() {
+      var self = this;
+      if (this.svg_board) this.svg_board.remove();
+
+        this.svg_board = d3.select("#d3-board-holder").append("svg")
+          .attr("width", this.width)
+          .attr("height", this.height);
+
+      let svg = this.svg_board;
 
       svg.append("g")
           .attr("class", "hexagon")
@@ -202,22 +292,23 @@ export default {
           })
           .attr("text-anchor", "middle");
 
-      svg.append("g")
-          .attr("class", "labels")
-          .selectAll("path")
-          .data(self.topology.objects.hexagons.geometries)
-          .enter().append("text")
-          .attr("x", function (d) {
-            return self.path.centroid(topojson.feature(self.topology, d))[0];
-          })
-          .attr("y", function (d) {
-            return self.path.centroid(topojson.feature(self.topology, d))[1];
-          })
-          .text(function (d) {
-            if (!self.dev_mode) return "";
-            return d.tile.attributes.key;
-          })
-          .attr("text-anchor", "middle");
+      if (self.dev_mode) {
+        svg.append("g")
+            .attr("class", "labels")
+            .selectAll("path")
+            .data(self.topology.objects.hexagons.geometries)
+            .enter().append("text")
+            .attr("x", function (d) {
+              return self.path.centroid(topojson.feature(self.topology, d))[0];
+            })
+            .attr("y", function (d) {
+              return self.path.centroid(topojson.feature(self.topology, d))[1];
+            })
+            .text(function (d) {
+              return d.tile.attributes.key;
+            })
+            .attr("text-anchor", "middle");
+      }
 
       svg.append("g")
           .attr("class", "types")
@@ -243,6 +334,8 @@ export default {
           })
           .attr("text-anchor", "middle");
 
+
+
       svg.append("path")
           .datum(topojson.mesh(self.topology, self.topology.objects.hexagons))
           .attr("class", "mesh")
@@ -255,79 +348,7 @@ export default {
           .attr("stroke", "#247aff")
           .call(self.redrawHarbour);
 
-      svg.append("g")
-          .attr("class", "borders")
-          .selectAll("path")
-          .data(self.edges)
-          .enter().append("path")
-          .attr("stroke", function (d) {
-            if (d.attributes.road) {
-              return d.attributes.player_color;
-            } 
-            return "#fff";
-          })
-          .attr("class", function (d) {
-            if (d.attributes.road) {
-              return "border border--road"
-            } else {
-              return "border border--empty"
-            }
-          })
-          .attr("d", function (d) {
-              return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
-                var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
-                var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
-                return (edge1 == d || edge2 == d);
-              }))
-          })
-          .on("click", function(d) { self.click_edge(d.attributes) });
-
-      svg.append("g")
-          .attr("class", "nodes")
-          .selectAll("path")
-          .data(self.nodes.map(function(n) {
-              return n.attributes;
-          }))
-          .enter().append("path")
-          .attr("transform", function (d) {
-              var coordinate = self.path.centroid(topojson.merge(self.topology, [
-                  self.getHexByKey(d.t_key),
-                  self.getHexByKey(d.l_key),
-                  self.getHexByKey(d.r_key)
-              ]));
-              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-          })
-          .attr("d", function (d) {
-              if (d.structure == "VILLAGE") {
-                  return "M0 -10 L10 -2 L10 10 L-10 10 L-10 -2 L0 -10 Z"
-              } else if (d.structure == "CITY") {
-                  return "M-12 -2 L1 -2 L1 -10 L6 -12 L11 -10 L11 12 L-12 12 L-12 -2 Z"
-              } else {
-                  return "m -7.5, 0 a 7.5,7.5 0 1,0 15,0 a 7.5,7.5 0 1,0 -15,0"
-              }
-          }).attr('fill', function (d) {
-              return d.player_color;
-          }).attr("class", function(d) {
-              if (d.structure == "VILLAGE") {
-                  return "node node--village"
-              } else if (d.structure == "CITY") {
-                  return "node node--city"
-              } 
-              return "node node--empty"
-          })
-          .on("click", function(d) { self.click_node(d) });
-
-      svg.append("g")
-          .attr("class", "bandits")
-          .selectAll("path")
-          .data(self.bandits)
-          .enter().append("path")
-          .attr("transform", function (d) {
-            var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
-            return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-          })
-          .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");   
-    }
+      }
   }
 }
 </script>
@@ -337,9 +358,14 @@ export default {
   width: 100%;
 }
 
-#d3-holder {
+#d3-board-holder, #d3-game-holder {
   display: flex;
   justify-content: center;
   width: 100%;
+  position: absolute;
 }
+
+ #d3-game-holder {
+   pointer-events: none;
+ }
 </style>

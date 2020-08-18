@@ -305,6 +305,7 @@ input:focus {
 
 .node {
     stroke: #000;
+    pointer-events: all;
 }
 
 .node--empty {
