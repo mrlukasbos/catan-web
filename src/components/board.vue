@@ -7,10 +7,11 @@
 <script>
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
+import {T} from '../translations'
 
 export default {
   name: 'connect',
-  props: ['json'],
+  props: ['json', 'lang'],
 
   data: function() {
       return {
@@ -45,6 +46,9 @@ export default {
       this.nodes = board.nodes;
       this.bandits = board.bandits;
       this.players = this.json.attributes.players;
+      this.draw_board();
+    },
+    lang: function() {
       this.draw_board();
     }
   },
@@ -231,7 +235,7 @@ export default {
               } else {
                   str = d.tile.attributes.resource_type.toLowerCase();
               }
-              return str;
+              return T(str);
           })
           .attr("text-anchor", "middle");
 

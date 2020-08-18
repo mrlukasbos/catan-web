@@ -1,16 +1,22 @@
 <template>
   <div id="app">
     <h1> Catan </h1>
-    <button v-on:click="start_game"> Start </button>
-    <button v-on:click="stop_game"> Stop </button>
-    <connect v-on:connect="connect"/>
-    <board :json="board_data"/>
+    <button v-on:click="start_game"> {{T("START_GAME")}} </button>
+    <button v-on:click="stop_game"> {{T("STOP_GAME")}} </button>
+
+    <select v-model="lang">
+        <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
+    </select>
+
+    <connect v-on:connect="connect" :key="lang"/>
+    <board :json="board_data" :lang="lang"/>
   </div>
 </template>
 
 <script>
 import connect from './components/connect.vue'
 import board from './components/board.vue'
+import {setGlobalLanguage} from './translations'
 
 export default {
   name: 'App',
@@ -23,6 +29,15 @@ export default {
     return {
       socket: null,
       board_data: null,
+      lang: "EN",
+      locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}]
+    }
+  },
+
+  watch: {
+    lang: function() {
+        setGlobalLanguage(this.lang);
+        this.$forceUpdate();
     }
   },
 

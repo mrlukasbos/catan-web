@@ -2,7 +2,7 @@
   <div>
     <input placeholder="Ip address" v-model="ip" v-on:keyup.enter="connect"/>
     <input placeholder="port" v-model="port" v-on:keyup.enter="connect"/>
-    <button v-on:click="connect"> Connect </button>
+    <button v-on:click="connect"> {{T("CONNECT")}} </button>
   </div>
 </template>
 
