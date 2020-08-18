@@ -12,8 +12,35 @@ export default {
   name: 'connect',
   props: ['json'],
 
+  data: function() {
+      return {
+        width: 1050,
+        height: 900,
+        radius: 75,
+        tiles: [],
+        edges: [],
+        nodes: [],
+        bandits: [],
+        players: [],
+        topology: null,
+        projection: null,
+        path: null,
+      }
+  },
+
   watch: { 
     json: function() {
+      let board = this.json.attributes.board.attributes;
+      this.tiles = board.tiles;
+      this.edges = board.edges;
+      this.nodes = board.nodes;
+      this.bandits = board.bandits;
+      this.players = this.json.attributes.players;
+
+      this.topology = this.hexTopology(this.radius, this.width, this.height);
+      this.projection = this.hexProjection(this.radius);
+      this.path = d3.geoPath().projection(this.projection);
+
       this.draw_board();
     }
   },
@@ -23,48 +50,121 @@ export default {
           console.log({"clicked-node":data});
           alert("Node clicked: " + JSON.stringify(data));
         },
+
         click_tile: function(data) {
           console.log({"clicked-tile":data});
           alert("Tile clicked: " + JSON.stringify(data));
         },
+
         click_edge: function(data) {
           console.log({"clicked-edge":data});
           alert("Edge clicked: " + JSON.stringify(data));
+        },
+
+        getTile: function(x, y) {
+          var key = `[${x},${y}]`;
+          return this.tiles.find((item) => {
+            return item.attributes.key == key;  
+          });
+        },
+
+        getEdge: function(a, b) {
+          var key = `(${a},${b})`;
+          return this.edges.find((item) => { 
+            return item.attributes.key == key;  
+          });
+        },
+
+        getHexByKey: function(key) {
+          return this.topology.objects.hexagons.geometries.find((item) => {
+            return item.tile.attributes.key == key;
+          });
+        },
+
+        redrawHarbour: function(harbourBorder) {
+          let self = this;
+          harbourBorder.attr("d", self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
+              var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+              var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
+              return (edge1 && edge1.attributes.harbour) || (edge2 && edge2.attributes.harbour);
+          })));
+        },
+
+        hexProjection: function(radius) {
+        var dx = radius * 2 * Math.sin(Math.PI / 3),
+            dy = radius * 1.5;
+        return {
+            stream: function (stream) {
+                return {
+                    point: function (x, y) {
+                        stream.point(x * dx / 2, (y - (2 - (y & 1)) / 3) * dy / 2);
+                    },
+                    lineStart: function () {
+                        stream.lineStart();
+                    },
+                    lineEnd: function () {
+                        stream.lineEnd();
+                    },
+                    polygonStart: function () {
+                        stream.polygonStart();
+                    },
+                    polygonEnd: function () {
+                        stream.polygonEnd();
+                    }
+                };
+            }
+        };
+      },
+        hexTopology: function(radius, width, height) {
+          var dx = radius * 2 * Math.sin(Math.PI / 3),
+              dy = radius * 1.5,
+              m = Math.ceil((height + radius) / dy) + 1,
+              n = Math.ceil(width / dx) + 1,
+              geometries = [],
+              arcs = [];
+
+          for (var j = -1; j <= m; ++j) {
+              for (var i = -1; i <= n; ++i) {
+                  var y = j * 2, x = (i + (j & 1) / 2) * 2;
+                  arcs.push([[x, y - 1], [1, 1]], [[x + 1, y], [0, 1]], [[x + 1, y + 1], [-1, 1]]);
+              }
+          }
+
+          var q;
+          for (j = 0, q = 3; j < m; ++j, q += 6) {
+              for (i = 0; i < n; ++i, q += 3) {
+                  if (this.getTile(i - 1, j - 2)) {
+                      geometries.push({
+                          type: "Polygon",
+                          arcs: [[q, q + 1, q + 2, ~(q + (n + 2 - (j & 1)) * 3), ~(q - 2), ~(q - (n + 2 + (j & 1)) * 3 + 2)]],
+                          tile: this.getTile(i - 1, j - 2)
+                      });
+                  }
+              }
+          }
+
+          return {
+              transform: {translate: [0, 0], scale: [1, 1]},
+              objects: {hexagons: {type: "GeometryCollection", geometries: geometries}},
+              arcs: arcs
+          };
         },
         draw_board: function() {
           d3.select("svg").remove();
           var self = this;
 
-          let json = this.json;
 
-          var tiles = json.attributes.board.attributes.tiles,
-              edges = json.attributes.board.attributes.edges,
-              nodes = json.attributes.board.attributes.nodes,
-              bandits = json.attributes.board.attributes.bandits;
-          //   players = json.attributes.players;
-
-      var width = 1050,
-          height = 900,
-          radius = 75;
-
-      var topology = hexTopology(radius, width, height);
-
-      var projection = hexProjection(radius);
-
-      var path = d3.geoPath()
-          .projection(projection);
-
-      var svg = d3.select("#d3-holder").append("svg")
-          .attr("width", width)
-          .attr("height", height);
+          var svg = d3.select("#d3-holder").append("svg")
+              .attr("width", this.width)
+              .attr("height", this.height);
 
       svg.append("g")
           .attr("class", "hexagon")
           .selectAll("path")
-          .data(topology.objects.hexagons.geometries)
+          .data(self.topology.objects.hexagons.geometries)
           .enter().append("path")
           .attr("d", function (d) {
-              return path(topojson.feature(topology, d));
+              return self.path(topojson.feature(self.topology, d));
           })
           .attr("class", function (d) {
               return "tile " + d.tile.attributes.resource_type;
@@ -74,13 +174,13 @@ export default {
       svg.append("g")
           .attr("class", "numbers")
           .selectAll("path")
-          .data(topology.objects.hexagons.geometries)
+          .data(self.topology.objects.hexagons.geometries)
           .enter().append("text")
           .attr("x", function (d) {
-              return path.centroid(topojson.feature(topology, d))[0];
+              return self.path.centroid(topojson.feature(self.topology, d))[0];
           })
           .attr("y", function (d) {
-              return path.centroid(topojson.feature(topology, d))[1] - 20;
+              return self.path.centroid(topojson.feature(self.topology, d))[1] - 20;
           })
           .text(function (d) {
               if (d.tile.attributes.number > 0) return d.tile.attributes.number;
@@ -91,13 +191,13 @@ export default {
       svg.append("g")
           .attr("class", "labels")
           .selectAll("path")
-          .data(topology.objects.hexagons.geometries)
+          .data(self.topology.objects.hexagons.geometries)
           .enter().append("text")
           .attr("x", function (d) {
-              return path.centroid(topojson.feature(topology, d))[0];
+              return self.path.centroid(topojson.feature(self.topology, d))[0];
           })
           .attr("y", function (d) {
-              return path.centroid(topojson.feature(topology, d))[1];
+              return self.path.centroid(topojson.feature(self.topology, d))[1];
           })
           .text(function (d) {
               return d.tile.attributes.key;
@@ -107,13 +207,13 @@ export default {
       svg.append("g")
           .attr("class", "types")
           .selectAll("path")
-          .data(topology.objects.hexagons.geometries)
+          .data(self.topology.objects.hexagons.geometries)
           .enter().append("text")
           .attr("x", function (d) {
-              return path.centroid(topojson.feature(topology, d))[0];
+              return self.path.centroid(topojson.feature(self.topology, d))[0];
           })
           .attr("y", function (d) {
-              return path.centroid(topojson.feature(topology, d))[1] + 15;
+              return self.path.centroid(topojson.feature(self.topology, d))[1] + 15;
           })
           .text(function (d) {
               var str = "";
@@ -129,30 +229,21 @@ export default {
           .attr("text-anchor", "middle");
 
       svg.append("path")
-          .datum(topojson.mesh(topology, topology.objects.hexagons))
+          .datum(topojson.mesh(self.topology, self.topology.objects.hexagons))
           .attr("class", "mesh")
           .attr("stroke", "#ffffff")
           .attr("stroke-width", 1)
-          .attr("d", path);
+          .attr("d", self.path);
 
       svg.append("path")
           .attr("class", "harbour-edge")
           .attr("stroke", "#247aff")
-          .call(redrawHarbour);
-
-      function redrawHarbour(harbourBorder) {
-          harbourBorder.attr("d", path(topojson.mesh(topology, topology.objects.hexagons, function (a, b) {
-              var edge1 = getEdge(a.tile.attributes.key, b.tile.attributes.key);
-              var edge2 = getEdge(b.tile.attributes.key, a.tile.attributes.key);
-              if (edge1) console.log(edge1);
-              return (edge1 && edge1.attributes.harbour) || (edge2 && edge2.attributes.harbour);
-          })));
-      }
+          .call(self.redrawHarbour);
 
       svg.append("g")
           .attr("class", "borders")
           .selectAll("path")
-          .data(edges)
+          .data(self.edges)
           .enter().append("path")
           .attr("stroke", function (d) {
               if (d.attributes.road) {
@@ -169,9 +260,9 @@ export default {
               }
           })
           .attr("d", function (d) {
-              return path(topojson.mesh(topology, topology.objects.hexagons, function (a, b) {
-                  var edge1 = getEdge(a.tile.attributes.key, b.tile.attributes.key);
-                  var edge2 = getEdge(b.tile.attributes.key, a.tile.attributes.key);
+              return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
+                  var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+                  var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
 
                   if (edge1 == d || edge2 == d) {
                       return true;
@@ -184,15 +275,24 @@ export default {
       svg.append("g")
           .attr("class", "nodes")
           .selectAll("path")
-          .data(nodes.map(function(n) {
+          .data(self.nodes.map(function(n) {
               return n.attributes;
           }))
           .enter().append("path")
           .attr("transform", function (d) {
-              var coordinate = path.centroid(topojson.merge(topology, [
-                  getHexByKey(d.t_key),
-                  getHexByKey(d.l_key),
-                  getHexByKey(d.r_key)
+
+
+            console.log(d);
+            console.log([
+                  self.getHexByKey(d.t_key),
+                  self.getHexByKey(d.l_key),
+                  self.getHexByKey(d.r_key)
+              ]);
+
+              var coordinate = self.path.centroid(topojson.merge(self.topology, [
+                  self.getHexByKey(d.t_key),
+                  self.getHexByKey(d.l_key),
+                  self.getHexByKey(d.r_key)
               ]));
               return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
           })
@@ -220,96 +320,13 @@ export default {
       svg.append("g")
           .attr("class", "bandits")
           .selectAll("path")
-          .data(bandits)
+          .data(self.bandits)
           .enter().append("path")
           .attr("transform", function (d) {
-              var coordinate = path.centroid(topojson.feature(topology, getHexByKey(d.attributes.tile_key)));
+              var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
               return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
           })
-          .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
-
-      function hexTopology(radius, width, height) {
-          var dx = radius * 2 * Math.sin(Math.PI / 3),
-              dy = radius * 1.5,
-              m = Math.ceil((height + radius) / dy) + 1,
-              n = Math.ceil(width / dx) + 1,
-              geometries = [],
-              arcs = [];
-
-          for (var j = -1; j <= m; ++j) {
-              for (var i = -1; i <= n; ++i) {
-                  var y = j * 2, x = (i + (j & 1) / 2) * 2;
-                  arcs.push([[x, y - 1], [1, 1]], [[x + 1, y], [0, 1]], [[x + 1, y + 1], [-1, 1]]);
-              }
-          }
-
-          var q;
-          for (j = 0, q = 3; j < m; ++j, q += 6) {
-              for (i = 0; i < n; ++i, q += 3) {
-                  if (getTile(i - 1, j - 2)) {
-                      geometries.push({
-                          type: "Polygon",
-                          arcs: [[q, q + 1, q + 2, ~(q + (n + 2 - (j & 1)) * 3), ~(q - 2), ~(q - (n + 2 + (j & 1)) * 3 + 2)]],
-                          tile: getTile(i - 1, j - 2)
-                      });
-                  }
-              }
-          }
-
-          return {
-              transform: {translate: [0, 0], scale: [1, 1]},
-              objects: {hexagons: {type: "GeometryCollection", geometries: geometries}},
-              arcs: arcs
-          };
-        }
-
-    function getTile(x, y) {
-        var key = `[${x},${y}]`;
-        return tiles.find(matchKey, key);
-    }
-
-    function getEdge(a, b) {
-        var key = `(${a},${b})`;
-        return edges.find(matchKey, key);
-    }
-
-    function matchKey(item) {
-        return item.attributes.key == this;
-    }
-
-    function getHexByKey(key) {
-        return topology.objects.hexagons.geometries.find(matchTile, key)
-    }
-
-    function matchTile(item) {
-        return item.tile.attributes.key == this;
-    }
-
-    function hexProjection(radius) {
-        var dx = radius * 2 * Math.sin(Math.PI / 3),
-            dy = radius * 1.5;
-        return {
-            stream: function (stream) {
-                return {
-                    point: function (x, y) {
-                        stream.point(x * dx / 2, (y - (2 - (y & 1)) / 3) * dy / 2);
-                    },
-                    lineStart: function () {
-                        stream.lineStart();
-                    },
-                    lineEnd: function () {
-                        stream.lineEnd();
-                    },
-                    polygonStart: function () {
-                        stream.polygonStart();
-                    },
-                    polygonEnd: function () {
-                        stream.polygonEnd();
-                    }
-                };
-            }
-        };
-      }
+          .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");   
     }
   }
 }

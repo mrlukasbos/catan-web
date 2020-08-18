@@ -226,6 +226,21 @@ input:focus {
 
 .numbers {
     font-size: 25px;
+    pointer-events: none;
+}
+
+.labels { 
+    visibility: hidden;
+    display: none;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.types { 
+    visibility: hidden;
+    display: none;
+    font-size: 16px;
+    pointer-events: none;
 }
 
 .events {
