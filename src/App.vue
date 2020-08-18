@@ -1,15 +1,22 @@
 <template>
   <div id="app">
-    <h1> Catan </h1>
+      <div class="header">
+        <span class="title"> Catan </span>
+        <div class="controls">
+            <div class="control">
+                {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
+            </div>
+            <div class="control">
+            <select v-model="lang">
+                <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
+            </select>
+            </div>
+        </div>
+    </div>
     <button v-on:click="start_game"> {{T("START_GAME")}} </button>
     <button v-on:click="stop_game"> {{T("STOP_GAME")}} </button>
-
-    <select v-model="lang">
-        <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
-    </select>
-
     <connect v-on:connect="connect" :key="lang"/>
-    <board :json="board_data" :lang="lang"/>
+    <board :json="board_data" :lang="lang" :dev_mode="dev_mode"/>
   </div>
 </template>
 
@@ -17,12 +24,13 @@
 import connect from './components/connect.vue'
 import board from './components/board.vue'
 import {setGlobalLanguage} from './translations'
-
+import { ToggleButton } from 'vue-js-toggle-button'
 export default {
   name: 'App',
   components: {
     connect,
-    board
+    board,
+    ToggleButton
   },
 
   data: function() {
@@ -30,7 +38,8 @@ export default {
       socket: null,
       board_data: null,
       lang: "EN",
-      locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}]
+      locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
+      dev_mode: false
     }
   },
 
@@ -96,14 +105,40 @@ html, body {
   font-family: Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 4px;
+    background-color: #fff;
+    color: black;
+    border-bottom: 1px solid #efefef;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+}
+
+.control {
+border-left: 1px solid #efefef;
+padding-left: 12px;
+padding-right: 12px;
+}
+
+#debug-checkbox {
+    height: auto;
 }
 
 button {
     border: none;
-    background-color: lightgreen;
+    background-color:  rgba(46, 167, 6, 1);
     height:36px;
     border-radius: 4px;
     color: white;
@@ -114,7 +149,7 @@ button {
 }
 
 button:hover {
-    background-color: lawngreen;
+    background-color:  rgb(41, 148, 5);
     transition: background-color .12s;
 }
 

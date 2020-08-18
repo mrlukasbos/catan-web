@@ -11,7 +11,7 @@ import {T} from '../translations'
 
 export default {
   name: 'connect',
-  props: ['json', 'lang'],
+  props: ['json', 'lang', 'dev_mode'],
 
   data: function() {
       return {
@@ -49,6 +49,9 @@ export default {
       this.draw_board();
     },
     lang: function() {
+      this.draw_board();
+    },
+    dev_mode: function() {
       this.draw_board();
     }
   },
@@ -211,6 +214,7 @@ export default {
             return self.path.centroid(topojson.feature(self.topology, d))[1];
           })
           .text(function (d) {
+            if (!self.dev_mode) return "";
             return d.tile.attributes.key;
           })
           .attr("text-anchor", "middle");
@@ -226,14 +230,14 @@ export default {
           .attr("y", function (d) {
             return self.path.centroid(topojson.feature(self.topology, d))[1] + 15;
           })
-          .text(function (d) {
+          .text(function (d) {            
               var str = "";
               if (d.tile.attributes.resource_type === "SEA") {
                 if (d.tile.attributes.harbour_type !== "HARBOUR_NONE") {
                   str = d.tile.attributes.harbour_type;
                 }
               } else {
-                  str = d.tile.attributes.resource_type.toLowerCase();
+                  str = d.tile.attributes.resource_type;
               }
               return T(str);
           })
@@ -329,4 +333,13 @@ export default {
 </script>
 
 <style scoped>
+.board {
+  width: 100%;
+}
+
+#d3-holder {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
 </style>

@@ -25,6 +25,9 @@ t_EN["JOIN_GAME"] = "join game";
 t_EN["START_GAME"] = "start game";
 t_EN["STOP_GAME"] = "stop game";
 t_EN["CONNECT"] = "connect";
+t_EN["DEV_MODE"] = "dev mode";
+t_EN["ON"] = "on";
+t_EN["OFF"] = "off";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -43,7 +46,9 @@ t_NL["JOIN_GAME"] = "neem deel aan spel";
 t_NL["START_GAME"] = "start spel";
 t_NL["STOP_GAME"] = "stop spel";
 t_NL["CONNECT"] = "Verbinden";
-
+t_NL["DEV_MODE"] = "Ontwikkelaarsmodus";
+t_NL["ON"] = "aan";
+t_NL["OFF"] = "uit";
  // lowercase translation
 function t(key) {
     var result;
