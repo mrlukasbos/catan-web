@@ -2,9 +2,9 @@
 
 Repository for a user interface for the Catan game.
 
-Other repositories:
-Catan server: https://github.com/mrlukasbos/Catan
-Catan AI client: https://github.com/mrlukasbos/catan-client
+**Other repositories:**  
+Catan server: https://github.com/mrlukasbos/Catan  
+Catan AI client: https://github.com/mrlukasbos/catan-client  
 
 
 ## Project setup
