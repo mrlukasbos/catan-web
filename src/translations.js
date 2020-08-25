@@ -39,6 +39,9 @@ t_EN["DEVELOPMENT_CARDS"] = "development cards";
 t_EN["RESOURCES"] = "resources";
 t_EN["UNUSED"] = "unused";
 t_EN["BUY_DEVELOPMENT"] = "buy development card";
+t_EN["CLEAR_ACTIONS"] = "clear actions";
+
+
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -71,6 +74,7 @@ t_NL["DEVELOPMENT_CARDS"] = "ontwikkelingskaarten";
 t_NL["RESOURCES"] = "grondstoffen";
 t_NL["UNUSED"] = "ongebruikt";
 t_NL["BUY_DEVELOPMENT"] = "koop ontwikkelingskaart";
+t_NL["CLEAR_ACTIONS"] = "verwijder acties";
 
 
  // lowercase translation

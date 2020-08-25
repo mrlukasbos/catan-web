@@ -18,8 +18,9 @@
         <resources-list :resources="action.resources"/>
       </div>
     </div>
-    <div class="action-view__finish">
-      <button class="action-view__finish-button"> {{T("FINISH_TURN")}} </button>
+    <div class="action-view__finish" >
+      <button class="action-view__clear-button" v-on:click="clearActions"> {{T("CLEAR_ACTIONS")}} </button>
+      <button class="action-view__finish-button" v-on:click="sendClientResponse"> {{T("FINISH_TURN")}} </button>
     </div>
   </div>
 </template>
@@ -33,9 +34,39 @@
     methods: {
       buyDevelopmentCard: function () {
         this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: -1},{type: "GRAIN", value: -1},{type: "ORE", value: -1}]);
-      }
+      },
+      clearActions: function() {
+        this.$emit("clearActions");
+      },
+      sendClientResponse: function() {
+        let buildRequest = [];
+
+        this.actions.forEach(function(action) {
+          if (action.action === "buildVillage") {
+            buildRequest.push({ 
+              structure: "village", 
+              location: action.object.key 
+            });
+          } else if (action.action === "buildCity") {
+              buildRequest.push({ 
+              structure: "city", 
+              location: action.object.key 
+            });
+          } else if (action.action === "buildRoad") {
+              buildRequest.push({ 
+              structure: "street", 
+              location: action.object.key 
+            });
+          } else if (action.action === "buyDevelopmentCard") {
+              buildRequest.push({ 
+              structure: "development_card" });
+          }
+        });
+      this.$emit("clientResponse", buildRequest);
+      this.$emit("clearActions");
     }
   }
+}
 </script>
 
 <style scoped>
@@ -108,6 +139,11 @@
   }
 
   .action-view__finish-button {
+    width: 100%;
+    font-size: large;
+    font-weight: bold;
+  }
+  .action-view__clear-button {
     width: 100%;
     font-size: large;
     font-weight: bold;
