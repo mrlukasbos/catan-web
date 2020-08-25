@@ -33,12 +33,15 @@
 
 <style scoped>
   .action-view {
+    background: #333;
+    position: absolute;
     width: 400px;
-    height: 100%;
-    background-color: #000;
-    border-left: solid 1px #444;
-    padding: 8px;
-    color: #fff;
+    height: 80vh;
+    color: white;
+    border-radius: 4px;
+    right: 24px;
+    top: 96px;
+    padding: 24px;
     display: flex;
     flex-direction: column;
   }
@@ -61,7 +64,6 @@
 
   .action-view__actions {
     flex-grow: 1;
-    overflow-y: scroll;
   }
 
   .action-view__trade-button,
