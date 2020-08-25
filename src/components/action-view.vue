@@ -9,10 +9,14 @@
     </div>
     <div class="action-view__buttons">
       <button class="action-view__trade-button"> {{T("TRADE")}} </button>
-      <button class="action-view__development-button"> {{T("BUY_DEVELOPMENT")}} </button>
+      <button class="action-view__development-button" v-on:click="buyDevelopmentCard"> {{T("BUY_DEVELOPMENT")}} </button>
     </div>
     <div class="action-view__actions">
       <p class="action-view__actions-hint"> {{T("ACTIONS_HINT")}} </p>
+      <div v-for="action in actions" v-bind:key="action.object" class="action-view__action" v-bind:class="action.action">
+        <h3> {{action.action}} </h3>
+        <resources-list :resources="action.resources"/>
+      </div>
     </div>
     <div class="action-view__finish">
       <button class="action-view__finish-button"> {{T("FINISH_TURN")}} </button>
@@ -25,7 +29,12 @@
 
   export default {
     components: {ResourcesList},
-    props: ["me"]
+    props: ["me", "actions"],
+    methods: {
+      buyDevelopmentCard: function () {
+        this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: 1},{type: "GRAIN", value: 1},{type: "ORE", value: 1}]);
+      }
+    }
   }
 </script>
 
