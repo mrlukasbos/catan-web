@@ -35,11 +35,11 @@
     background: #333;
     position: absolute;
     width: 400px;
-    height: 80vh;
+    height: 90vh;
     color: white;
     border-radius: 4px;
     right: -400px;
-    top: 96px;
+    top: 64px;
     padding: 24px;
     display: flex;
     flex-direction: column;

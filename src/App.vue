@@ -21,13 +21,13 @@
                 <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
             </select>
             </div>
+            <a class="control" v-if="socket" v-on:click="start_game"> {{T("START_GAME")}} </a>
+            <a class="control" v-if="socket" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
+            <a class="control" v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
+            <connect v-else v-on:connect="connect" :key="lang"/>
         </div>
     </div>
-    <button v-on:click="start_game"> {{T("START_GAME")}} </button>
-    <button v-on:click="stop_game"> {{T("STOP_GAME")}} </button>
 
-    <button v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </button>
-    <connect v-else v-on:connect="connect" :key="lang"/>
 
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
@@ -201,12 +201,20 @@ html, body {
 
 .controls {
     display: flex;
+    align-items: center;
 }
 
 .control {
-border-left: 1px solid #444;
-padding-left: 12px;
-padding-right: 12px;
+    border-left: 1px solid #444;
+    padding-left: 12px;
+    padding-right: 12px;
+    font-weight: 600;
+    font-size: small;
+    cursor: pointer;
+}
+
+.control:hover {
+    color: green;
 }
 
 #debug-checkbox {
