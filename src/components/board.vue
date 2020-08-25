@@ -14,7 +14,6 @@
     <modal :visible="tileModal">
       <h2> Create a action for this tile </h2>
       <button v-on:click="placeBandit"> Place bandit </button>
-      <button v-on:click="useKnight"> Use knight </button>
       <button v-on:click="closeTileModal"> Cancel </button>
     </modal>
     <div id="d3-board-holder"></div>
@@ -91,10 +90,12 @@ export default {
     },
 
     buildVillage: function () {
+      this.$emit("createAction", "buildVillage", this.nodeModal, [{type: "GRAIN", value: 1},{type: "WOOL", value: 1},{type: "WOOD", value: 1},{type: "STONE", value: 1}]);
       this.nodeModal = null;
     },
 
     buildCity: function () {
+      this.$emit("createAction", "buildCity", this.nodeModal, [{type: "GRAIN", value: 2},{type: "ORE", value: 3}]);
       this.nodeModal = null;
     },
 
@@ -108,10 +109,7 @@ export default {
     },
 
     placeBandit: function () {
-      this.tileModal = null;
-    },
-
-    useKnight: function () {
+      this.$emit("createAction", "placeBandit", this.tileModal, []);
       this.tileModal = null;
     },
 
@@ -125,6 +123,7 @@ export default {
     },
 
     buildRoad: function () {
+      this.$emit("createAction", "buildRoad", this.edgeModal, [{type: "WOOD", value: 1},{type: "STONE", value: 1}]);
       this.edgeModal = null;
     },
 

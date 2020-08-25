@@ -7,8 +7,9 @@
       <h2 class="action-view__resources-title"> {{T("CURRENT_RESOURCES")}} </h2>
       <resources-list v-if="me" :resources="me.attributes.resources" size="medium"/>
     </div>
-    <div class="action-view__trade">
+    <div class="action-view__buttons">
       <button class="action-view__trade-button"> {{T("TRADE")}} </button>
+      <button class="action-view__development-button"> {{T("BUY_DEVELOPMENT")}} </button>
     </div>
     <div class="action-view__actions">
       <p class="action-view__actions-hint"> {{T("ACTIONS_HINT")}} </p>
@@ -64,16 +65,26 @@
     margin: 0 0 4px 0;
   }
 
+  .action-view__buttons {
+    display: flex;
+    width: 100%;
+  }
+
+  .action-view__trade-button,
+  .action-view__development-button {
+    flex-grow: 1;
+  }
+
+  .action-view__trade-button {
+    margin-right: 1px;
+  }
+
   .action-view__actions {
     flex-grow: 1;
   }
 
-  .action-view__trade-button,
   .action-view__finish-button {
     width: 100%;
-  }
-
-  .action-view__finish-button {
     font-size: large;
     font-weight: bold;
   }

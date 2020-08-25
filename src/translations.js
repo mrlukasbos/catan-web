@@ -38,6 +38,7 @@ t_EN["NO_PLAYERS_CONNECTED"] = "no players connected";
 t_EN["DEVELOPMENT_CARDS"] = "development cards";
 t_EN["RESOURCES"] = "resources";
 t_EN["UNUSED"] = "unused";
+t_EN["BUY_DEVELOPMENT"] = "buy development card";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -69,6 +70,8 @@ t_NL["NO_PLAYERS_CONNECTED"] = "geen spelers verbonden";
 t_NL["DEVELOPMENT_CARDS"] = "ontwikkelingskaarten";
 t_NL["RESOURCES"] = "grondstoffen";
 t_NL["UNUSED"] = "ongebruikt";
+t_NL["BUY_DEVELOPMENT"] = "koop ontwikkelingskaart";
+
 
  // lowercase translation
 function t(key) {

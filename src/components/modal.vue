@@ -43,4 +43,8 @@ export default {
     padding-left: 330px;
     background-color: white;
   }
+
+  .modal__body button:not(:last-child) {
+    margin-right: 1px;
+  }
 </style>

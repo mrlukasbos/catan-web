@@ -96,7 +96,8 @@ export default {
           })
       },
       ownTurn: function() {
-        return this.player.id == this.currentPlayerId;
+        return true;
+        // return this.player.id == this.currentPlayerId;
       }
   },
 
@@ -189,6 +190,9 @@ export default {
         console.log("sending this message to CATAN SERVER: " + joinMessage);
         this.socket.send(joinMessage);
         this.hide_join_modal();
+    },
+    createAction: function (action,object,resources) {
+      this.actions.push({action: action, object: object, resources: resources});
     }
   }
 }
