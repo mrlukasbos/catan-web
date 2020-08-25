@@ -12,7 +12,7 @@
       <button class="action-view__development-button" v-on:click="buyDevelopmentCard"> {{T("BUY_DEVELOPMENT")}} </button>
     </div>
     <div class="action-view__actions">
-      <p class="action-view__actions-hint"> {{T("ACTIONS_HINT")}} </p>
+      <p class="action-view__actions-hint" v-if="actions.length == 0"> {{T("ACTIONS_HINT")}} </p>
       <div v-for="action in actions" v-bind:key="action.object" class="action-view__action" v-bind:class="action.action">
         <h3> {{action.action}} </h3>
         <resources-list :resources="action.resources"/>
