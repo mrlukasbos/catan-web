@@ -61,7 +61,7 @@
     color: white;
     border-radius: 4px;
     left: 24px;
-    top: 96px;
+    top: 64px;
   }
 
   .player-card {
