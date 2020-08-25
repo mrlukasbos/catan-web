@@ -29,8 +29,8 @@
     <button v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </button>
     <connect v-else v-on:connect="connect" :key="lang"/>
 
-    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
-    <action-view :key="lang"/>
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
   </div>
 </template>
@@ -82,6 +82,9 @@ export default {
           return this.players.find(function(player) {
               player.id == self.currentPlayerId;
           })
+      },
+      ownTurn: function() {
+        return this.socket != null;
       }
   },
 
@@ -172,6 +175,7 @@ export default {
 html, body {
     margin: 0;
     background-color: #222;
+  overflow-x: hidden;
 }
 
 #app {

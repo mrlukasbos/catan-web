@@ -27,7 +27,6 @@
 
 <script>
   export default {
-    name: "action-view"
   }
 </script>
 
@@ -39,11 +38,16 @@
     height: 80vh;
     color: white;
     border-radius: 4px;
-    right: 24px;
+    right: -400px;
     top: 96px;
     padding: 24px;
     display: flex;
     flex-direction: column;
+    transition: right 300ms;
+  }
+
+  .action-view--visible {
+    right: 24px;
   }
 
   .action-view > * {

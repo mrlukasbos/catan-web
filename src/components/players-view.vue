@@ -60,8 +60,13 @@
     width: 400px;
     color: white;
     border-radius: 4px;
-    left: 24px;
+    left: -400px;
     top: 96px;
+    transition: right 300ms;
+  }
+
+  .players-view--visible {
+    left: 24px;
   }
 
   .player-card {
@@ -70,7 +75,7 @@
     margin: 12px;
   }
 
-  .no-connections { 
+  .no-connections {
     margin: 24px;
   }
 </style>
