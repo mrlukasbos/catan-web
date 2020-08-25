@@ -16,6 +16,7 @@ export default {
 
   data: function() {
       return {
+        init: false,
         width: 1050,
         height: 900,
         radius: 75,
@@ -47,8 +48,9 @@ export default {
       this.edges = board.edges;
       this.nodes = board.nodes;
       this.bandits = board.bandits;
-      if (!this.svg) {
+      if (!this.init) {
         this.draw_board();
+        this.init = true;
       } 
       this.draw_game();
     },
