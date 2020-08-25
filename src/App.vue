@@ -97,8 +97,7 @@ export default {
           })
       },
       ownTurn: function() {
-        return true;
-        // return this.player.id == this.currentPlayerId;
+        return this.player.id == this.currentPlayerId;
       }
   },
 
