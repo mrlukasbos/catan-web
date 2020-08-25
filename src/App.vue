@@ -29,7 +29,7 @@
     </div>
     
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
-    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
