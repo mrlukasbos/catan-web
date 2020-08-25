@@ -7,11 +7,16 @@
       <h2 class="action-view__resources-title"> {{T("CURRENT_RESOURCES")}} </h2>
       <resources-list v-if="me" :resources="me.attributes.resources" size="medium"/>
     </div>
-    <div class="action-view__trade">
+    <div class="action-view__buttons">
       <button class="action-view__trade-button"> {{T("TRADE")}} </button>
+      <button class="action-view__development-button" v-on:click="buyDevelopmentCard"> {{T("BUY_DEVELOPMENT")}} </button>
     </div>
     <div class="action-view__actions">
-      <p class="action-view__actions-hint"> {{T("ACTIONS_HINT")}} </p>
+      <p class="action-view__actions-hint" v-if="actions.length == 0"> {{T("ACTIONS_HINT")}} </p>
+      <div v-for="action in actions" v-bind:key="action.object" class="action-view__action" v-bind:class="action.action">
+        <h4 class="action-view__action-name"> {{action.action}} <small v-if="dev_mode">({{action.object}}) </small></h4>
+        <resources-list :resources="action.resources"/>
+      </div>
     </div>
     <div class="action-view__finish">
       <button class="action-view__finish-button"> {{T("FINISH_TURN")}} </button>
@@ -24,7 +29,12 @@
 
   export default {
     components: {ResourcesList},
-    props: ["me"]
+    props: ["me", "actions", "dev_mode"],
+    methods: {
+      buyDevelopmentCard: function () {
+        this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: -1},{type: "GRAIN", value: -1},{type: "ORE", value: -1}]);
+      }
+    }
   }
 </script>
 
@@ -64,16 +74,41 @@
     margin: 0 0 4px 0;
   }
 
+  .action-view__buttons {
+    display: flex;
+    width: 100%;
+  }
+
+  .action-view__trade-button,
+  .action-view__development-button {
+    flex-grow: 1;
+  }
+
+  .action-view__trade-button {
+    margin-right: 1px;
+  }
+
   .action-view__actions {
     flex-grow: 1;
   }
 
-  .action-view__trade-button,
-  .action-view__finish-button {
-    width: 100%;
+  .action-view__action {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+  }
+
+  .action-view__action:not(:last-child) {
+    border-bottom: solid 1px #444;
+  }
+
+  .action-view__action-name {
+    margin: 0;
+    flex-grow: 1;
   }
 
   .action-view__finish-button {
+    width: 100%;
     font-size: large;
     font-weight: bold;
   }
