@@ -1,14 +1,11 @@
 <template>
   <div id="app">
-
- <div class="modal" v-bind:class="{visible: joinModalVisible}" v-on:click.self="hide_join_modal">
-        <div class="modal-body">
-            <h2> Join the game </h2>
-            <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-            <button v-on:click="hide_join_modal"> Cancel </button>
-            <button v-on:click="join_game"> Join </button>
-        </div>
-    </div>
+    <modal :visible="joinModalVisible">
+      <h2> Join the game </h2>
+      <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
+      <button v-on:click="hide_join_modal"> Cancel </button>
+      <button v-on:click="join_game"> Join </button>
+    </modal>
 
       <div class="header">
         <span class="title"> Catan </span>
@@ -41,6 +38,7 @@ import board from './components/board.vue'
 import playersView from './components/players-view.vue'
 import eventsView from './components/events-view.vue'
 import actionView from './components/action-view.vue'
+import modal from './components/modal.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
 
@@ -53,6 +51,7 @@ export default {
     playersView,
     eventsView,
     actionView,
+    modal,
   },
 
   data: function() {
@@ -437,29 +436,6 @@ input:focus {
 .tile:hover {
     cursor: pointer;
     opacity: .5;
-}
-
-.modal {
-    width: 100vw;
-    height: 100vw;
-    background-color: rgba(200, 200, 200, 0.5);
-    position:fixed;
-    visibility: hidden;
-    transition: visibility .3s, opacity .3s;
-    opacity: 0;
-    z-index: 999;
-}
-
-.modal.visible {
-    visibility: visible;
-    opacity: 1;
-}
-
-.modal-body {
-    margin-top: 20%;
-    padding: 30px;
-    padding-left: 330px;
-    background-color: white;
 }
 
 .fancy-input {

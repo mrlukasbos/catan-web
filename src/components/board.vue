@@ -1,5 +1,22 @@
 <template>
-  <div class="board"> 
+  <div class="board">
+    <modal :visible="nodeModal">
+      <h2> Create a action for this node </h2>
+      <button v-on:click="buildVillage"> Build village </button>
+      <button v-on:click="buildCity"> Build city </button>
+      <button v-on:click="closeNodeModal"> Cancel </button>
+    </modal>
+    <modal :visible="edgeModal">
+      <h2> Create a action for this edge </h2>
+      <button v-on:click="buildRoad"> Build road </button>
+      <button v-on:click="closeEdgeModal"> Cancel </button>
+    </modal>
+    <modal :visible="tileModal">
+      <h2> Create a action for this tile </h2>
+      <button v-on:click="placeBandit"> Place bandit </button>
+      <button v-on:click="useKnight"> Use knight </button>
+      <button v-on:click="closeTileModal"> Cancel </button>
+    </modal>
     <div id="d3-board-holder"></div>
     <div id="d3-game-holder"></div>
   </div>
@@ -8,11 +25,13 @@
 <script>
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
-import {T} from '../translations'
+import {T} from '../translations';
+import modal from './modal.vue';
 
 export default {
   name: 'connect',
   props: ['board', 'players', 'lang', 'dev_mode'],
+  components: {modal},
 
   data: function() {
       return {
@@ -26,6 +45,9 @@ export default {
         bandits: [],
         svg_board: null,
         svg_game: null,
+        nodeModal: null,
+        edgeModal: null,
+        tileModal: null,
       }
   },
 
@@ -41,7 +63,7 @@ export default {
       }
   },
 
-  watch: { 
+  watch: {
     board: function() {
       let board = this.board;
       this.tiles = board.tiles;
@@ -51,7 +73,7 @@ export default {
       if (!this.init) {
         this.draw_board();
         this.init = true;
-      } 
+      }
       this.draw_game();
     },
     lang: function() {
@@ -65,30 +87,62 @@ export default {
   methods: {
     click_node: function(data) {
       console.log({"clicked-node":data});
-      alert("Node clicked: " + JSON.stringify(data));
+      this.nodeModal = data;
+    },
+
+    buildVillage: function () {
+      this.nodeModal = null;
+    },
+
+    buildCity: function () {
+      this.nodeModal = null;
+    },
+
+    closeNodeModal: function () {
+      this.nodeModal = null;
     },
 
     click_tile: function(data) {
       console.log({"clicked-tile":data});
-      alert("Tile clicked: " + JSON.stringify(data));
+      this.tileModal = data;
+    },
+
+    placeBandit: function () {
+      this.tileModal = null;
+    },
+
+    useKnight: function () {
+      this.tileModal = null;
+    },
+
+    closeTileModal: function () {
+      this.tileModal = null;
     },
 
     click_edge: function(data) {
       console.log({"clicked-edge":data});
-      alert("Edge clicked: " + JSON.stringify(data));
+      this.edgeModal = data;
+    },
+
+    buildRoad: function () {
+      this.edgeModal = null;
+    },
+
+    closeEdgeModal: function () {
+      this.edgeModal = null;
     },
 
     getTile: function(x, y) {
       var key = `[${x},${y}]`;
       return this.tiles.find((item) => {
-        return item.attributes.key == key;  
+        return item.attributes.key == key;
       });
     },
 
     getEdge: function(a, b) {
       var key = `(${a},${b})`;
-      return this.edges.find((item) => { 
-        return item.attributes.key == key;  
+      return this.edges.find((item) => {
+        return item.attributes.key == key;
       });
     },
 
@@ -110,7 +164,7 @@ export default {
     hexProjection: function(radius) {
       var dx = radius * 2 * Math.sin(Math.PI / 3),
           dy = radius * 1.5;
-          
+
       return {
         stream: function (stream) {
           return {
@@ -186,7 +240,7 @@ export default {
             .attr("stroke", function (d) {
               if (d.attributes.road) {
                 return d.attributes.player_color;
-              } 
+              }
               return "#fff";
             })
             .attr("class", function (d) {
@@ -235,7 +289,7 @@ export default {
                     return "node node--village"
                 } else if (d.structure == "CITY") {
                     return "node node--city"
-                } 
+                }
                 return "node node--empty"
             })
             .on("click", function(d) { self.click_node(d) });
@@ -249,7 +303,7 @@ export default {
               var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
               return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
             })
-            .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");   
+            .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
       },
       draw_board: function() {
       var self = this;
@@ -320,7 +374,7 @@ export default {
           .attr("y", function (d) {
             return self.path.centroid(topojson.feature(self.topology, d))[1] + 15;
           })
-          .text(function (d) {            
+          .text(function (d) {
               var str = "";
               if (d.tile.attributes.resource_type === "SEA") {
                 if (d.tile.attributes.harbour_type !== "HARBOUR_NONE") {
