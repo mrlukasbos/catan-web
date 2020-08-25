@@ -28,31 +28,39 @@
 
     <button v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </button>
     <connect v-else v-on:connect="connect" :key="lang"/>
-    <board :json="board_data" :lang="lang" :dev_mode="dev_mode"/>
+
+    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"> </players-view>
+
+    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
   </div>
 </template>
 
 <script>
 import connect from './components/connect.vue'
 import board from './components/board.vue'
+import playersView from './components/players-view.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
+
 export default {
   name: 'App',
   components: {
     connect,
     board,
-    ToggleButton
+    ToggleButton,
+    playersView,
   },
 
   data: function() {
     return {
       socket: null,
-      board_data: null,
+      board: null,
+      players: [],
       lang: "EN",
       locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
       dev_mode: false,
       joinModalVisible: false,
+      currentPlayerId: 1,
       player: {
           name: ""
       }
@@ -64,6 +72,15 @@ export default {
         setGlobalLanguage(this.lang);
         this.$forceUpdate();
     }
+  },
+
+  computed: {
+      currentPlayer: function() {
+          let self = this;
+          return this.players.find(function(player) {
+              player.id == self.currentPlayerId; 
+          })
+      }
   },
 
   methods: {
@@ -83,7 +100,10 @@ export default {
       
       this.socket.onmessage = (data) => {
         var message = data.data.toString();
-        this.board_data = JSON.parse(message);
+        let json = JSON.parse(message);
+        this.board = json.attributes.board.attributes;
+        this.players = json.attributes.players;
+      //  this.currentPlayerId = json.attributes.currentPlayer;
       }
     },
     kill_socket: function () {
@@ -94,12 +114,22 @@ export default {
     },
     start_game: function() {
       if (this.socket) {
-          this.socket.send("START");
+          this.socket.send(JSON.stringify({
+              model: 'control',
+              attributes: {
+                  command: 'START'
+              }
+          }));
       }
     },
     stop_game: function() {
         if (this.socket) {
-            this.socket.send("STOP");
+             this.socket.send(JSON.stringify({
+              model: 'control',
+              attributes: {
+                  command: 'STOP'
+              }
+          }));
         }
     },
     selectColor: function(evt, color) {
