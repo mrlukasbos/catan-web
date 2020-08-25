@@ -27,11 +27,11 @@
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
-
-
+    
+    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
-    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
+    <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
 
@@ -39,6 +39,7 @@
 import connect from './components/connect.vue'
 import board from './components/board.vue'
 import playersView from './components/players-view.vue'
+import eventsView from './components/events-view.vue'
 import actionView from './components/action-view.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
@@ -50,6 +51,7 @@ export default {
     board,
     ToggleButton,
     playersView,
+    eventsView,
     actionView,
   },
 
@@ -59,6 +61,7 @@ export default {
       socket: null,
       board: null,
       players: [],
+      events: [],
       lang: "EN",
       locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
       dev_mode: false,
@@ -111,6 +114,10 @@ export default {
         let json = JSON.parse(message);
         this.board = json.attributes.board.attributes;
         this.players = json.attributes.players;
+
+        if (json.attributes.events) {
+            this.events = json.attributes.events.reverse();
+        }
       //  this.currentPlayerId = json.attributes.currentPlayer;
       }
     },
