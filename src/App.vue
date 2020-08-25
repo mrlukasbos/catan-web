@@ -1,12 +1,12 @@
 <template>
   <div id="app">
 
- <div class="modal" v-bind:class="{visible: joinModalVisible}" v-on:click.self="hide_join_modal"> 
-        <div class="modal-body"> 
+ <div class="modal" v-bind:class="{visible: joinModalVisible}" v-on:click.self="hide_join_modal">
+        <div class="modal-body">
             <h2> Join the game </h2>
             <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
             <button v-on:click="hide_join_modal"> Cancel </button>
-            <button v-on:click="join_game"> Join </button> 
+            <button v-on:click="join_game"> Join </button>
         </div>
     </div>
 
@@ -29,8 +29,8 @@
     </div>
 
 
-    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"> </players-view>
-
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
   </div>
 </template>
@@ -39,6 +39,7 @@
 import connect from './components/connect.vue'
 import board from './components/board.vue'
 import playersView from './components/players-view.vue'
+import actionView from './components/action-view.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
 
@@ -49,6 +50,7 @@ export default {
     board,
     ToggleButton,
     playersView,
+    actionView,
   },
 
   data: function() {
@@ -79,8 +81,11 @@ export default {
       currentPlayer: function() {
           let self = this;
           return this.players.find(function(player) {
-              player.id == self.currentPlayerId; 
+              player.id == self.currentPlayerId;
           })
+      },
+      ownTurn: function() {
+        return this.socket != null;
       }
   },
 
@@ -88,7 +93,7 @@ export default {
     connect: function(ip, port) {
       this.kill_socket();
       this.socket = new WebSocket("ws://" + ip + ":" + port);
-      
+
       this.socket.onerror = (err) => {
         alert("connection error " + err)
       }
@@ -100,7 +105,7 @@ export default {
       this.socket.onopen = () => {
           this.connected = true;
       }
-      
+
       this.socket.onmessage = (data) => {
         var message = data.data.toString();
         let json = JSON.parse(message);
@@ -138,7 +143,7 @@ export default {
     },
     selectColor: function(evt, color) {
         this.player.color = color.code;
-    }, 
+    },
 
     show_join_modal: function() {
         this.joinModalVisible = true;
@@ -153,7 +158,7 @@ export default {
         let joinMessage = JSON.stringify({
             model: "join",
             attributes: {
-                name: this.player.name, 
+                name: this.player.name,
             }
         });
         console.log("sending this message to CATAN SERVER: " + joinMessage);
@@ -174,6 +179,7 @@ export default {
 html, body {
     margin: 0;
     background-color: #222;
+  overflow-x: hidden;
 }
 
 #app {
@@ -267,9 +273,7 @@ input:focus {
 
 .board {
     display: block;
-    flex-direction: column;
 }
-
 
 .hexagon {
     fill: white;
@@ -360,12 +364,12 @@ input:focus {
     pointer-events: none;
 }
 
-.labels { 
+.labels {
     font-size: 12px;
     pointer-events: none;
 }
 
-.types { 
+.types {
     font-size: 16px;
     pointer-events: none;
 }

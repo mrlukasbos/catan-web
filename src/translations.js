@@ -1,9 +1,9 @@
 /*
-Translations. 
+Translations.
 
 Contents:
     - EN
-    - NL 
+    - NL
 */
 
 export var lang = 'EN';
@@ -29,6 +29,11 @@ t_EN["DISCONNECT"] = "disconnect";
 t_EN["DEV_MODE"] = "dev mode";
 t_EN["ON"] = "on";
 t_EN["OFF"] = "off";
+t_EN["YOUR_TURN"] = "your turn";
+t_EN["TRADE"] = "trade";
+t_EN["CURRENT_RESOURCES"] = "current resources";
+t_EN["ACTIONS_HINT"] = "You have not chosen any actions for this turn yet. Click on the board to build streets, villages and cities or click the trade button to trade resources.";
+t_EN["FINISH_TURN"] = "Finish turn";
 t_EN["NO_PLAYERS_CONNECTED"] = "no players connected";
 t_EN["DEVELOPMENT_CARDS"] = "development cards";
 t_EN["RESOURCES"] = "resources";
@@ -55,6 +60,11 @@ t_NL["DISCONNECT"] = "verbreek verbinding";
 t_NL["DEV_MODE"] = "Ontwikkelaarsmodus";
 t_NL["ON"] = "aan";
 t_NL["OFF"] = "uit";
+t_NL["YOUR_TURN"] = "jouw beurt";
+t_NL["TRADE"] = "handelen";
+t_NL["CURRENT_RESOURCES"] = "huidige grondstoffen";
+t_NL["ACTIONS_HINT"] = "Je hebt nog geen acties gekozen voor deze beurt. Klik op het bord om straten, dorpen en steden te bouwen of klik op de handel knop om grondstoffen te verhandelen.";
+t_NL["FINISH_TURN"] = "beëindig beurt";
 t_NL["NO_PLAYERS_CONNECTED"] = "geen spelers verbonden";
 t_NL["DEVELOPMENT_CARDS"] = "ontwikkelingskaarten";
 t_NL["RESOURCES"] = "grondstoffen";
