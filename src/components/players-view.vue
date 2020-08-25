@@ -57,7 +57,7 @@
     border-radius: 4px;
     left: -400px;
     top: 64px;
-    transition: right 300ms;
+    transition: left 300ms;
   }
 
   .players-view--visible {
