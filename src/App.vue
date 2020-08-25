@@ -29,7 +29,7 @@
     <button v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </button>
     <connect v-else v-on:connect="connect" :key="lang"/>
 
-    <event-side-bar :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"> </event-side-bar>
+    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"> </players-view>
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
   </div>
@@ -38,7 +38,7 @@
 <script>
 import connect from './components/connect.vue'
 import board from './components/board.vue'
-import eventSideBar from './components/event-sidebar.vue'
+import playersView from './components/players-view.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
 
@@ -48,7 +48,7 @@ export default {
     connect,
     board,
     ToggleButton,
-    eventSideBar,
+    playersView,
   },
 
   data: function() {
