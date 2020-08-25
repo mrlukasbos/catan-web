@@ -1,10 +1,10 @@
 <template>
   <div class="action-sidebar">
     <div class="action-sidebar__title">
-      <h1 class="action-sidebar__title-text">Your turn</h1>
+      <h1 class="action-sidebar__title-text"> {{T("YOUR_TURN")}} </h1>
     </div>
     <div class="action-sidebar__resources">
-      <h2 class="action-sidebar__resources-title">Current resources</h2>
+      <h2 class="action-sidebar__resources-title"> {{T("CURRENT_RESOURCES")}} </h2>
       <ul class="action-sidebar__resources-list">
         <li class="action-sidebar__resources-item">Grain <span class="action-sidebar__resources-count">1</span></li>
         <li class="action-sidebar__resources-item">Wool <span class="action-sidebar__resources-count">1</span></li>
@@ -14,21 +14,21 @@
       </ul>
     </div>
     <div class="action-sidebar__trade">
-      <button class="action-sidebar__trade-button">Trade</button>
+      <button class="action-sidebar__trade-button"> {{T("TRADE")}} </button>
     </div>
     <div class="action-sidebar__actions">
-      <p class="action-sidebar__actions-todo">You have not chosen any actions for this turn yet. Click on the board to build streets, villages and cities or click the trade button to trade resources.</p>
+      <p class="action-sidebar__actions-hint"> {{T("ACTIONS_HINT")}} </p>
     </div>
     <div class="action-sidebar__finish">
-      <button class="action-sidebar__finish-button">Finish turn</button>
+      <button class="action-sidebar__finish-button"> {{T("FINISH_TURN")}} </button>
     </div>
   </div>
 </template>
 
 <script>
-export default {
-  name: "action-sidebar"
-}
+  export default {
+    name: "action-sidebar"
+  }
 </script>
 
 <style scoped>

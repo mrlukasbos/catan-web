@@ -31,7 +31,7 @@
     <div class="game-container">
       <div class="sidebar-left"></div>
       <board :json="board_data" :lang="lang" :dev_mode="dev_mode"/>
-      <action-sidebar/>
+      <action-sidebar :key="lang"/>
     </div>
   </div>
 </template>

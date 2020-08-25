@@ -1,9 +1,9 @@
 /*
-Translations. 
+Translations.
 
 Contents:
     - EN
-    - NL 
+    - NL
 */
 
 export var lang = 'EN';
@@ -28,6 +28,11 @@ t_EN["CONNECT"] = "connect";
 t_EN["DEV_MODE"] = "dev mode";
 t_EN["ON"] = "on";
 t_EN["OFF"] = "off";
+t_EN["YOUR_TURN"] = "your turn";
+t_EN["TRADE"] = "trade";
+t_EN["CURRENT_RESOURCES"] = "current resources";
+t_EN["ACTIONS_HINT"] = "You have not chosen any actions for this turn yet. Click on the board to build streets, villages and cities or click the trade button to trade resources.";
+t_EN["FINISH_TURN"] = "Finish turn";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -49,6 +54,12 @@ t_NL["CONNECT"] = "Verbinden";
 t_NL["DEV_MODE"] = "Ontwikkelaarsmodus";
 t_NL["ON"] = "aan";
 t_NL["OFF"] = "uit";
+t_NL["YOUR_TURN"] = "jouw beurt";
+t_NL["TRADE"] = "handelen";
+t_NL["CURRENT_RESOURCES"] = "huidige grondstoffen";
+t_NL["ACTIONS_HINT"] = "Je hebt nog geen acties gekozen voor deze beurt. Klik op het bord om straten, dorpen en steden te bouwen of klik op de handel knop om grondstoffen te verhandelen.";
+t_NL["FINISH_TURN"] = "beëindig beurt";
+
  // lowercase translation
 function t(key) {
     var result;
