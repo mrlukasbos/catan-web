@@ -21,10 +21,10 @@
                 <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
             </select>
             </div>
-            <a class="control" v-if="socket" v-on:click="start_game"> {{T("START_GAME")}} </a>
-            <a class="control" v-if="socket" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
-            <a class="control" v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
-            <connect v-else v-on:connect="connect" :key="lang"/>
+            <a class="control" v-if="connected" v-on:click="start_game"> {{T("START_GAME")}} </a>
+            <a class="control" v-if="connected" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
+            <a class="control" v-if="connected" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
+            <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
 
@@ -55,6 +55,7 @@ export default {
 
   data: function() {
     return {
+      connected: false,
       socket: null,
       board: null,
       players: [],
@@ -101,7 +102,9 @@ export default {
           this.kill_socket();
       }
 
-      this.socket.onopen = () => {}
+      this.socket.onopen = () => {
+          this.connected = true;
+      }
 
       this.socket.onmessage = (data) => {
         var message = data.data.toString();
@@ -116,6 +119,7 @@ export default {
         this.socket.close();
         delete this.socket;
       }
+      this.connected = false;
     },
     start_game: function() {
       if (this.socket) {
