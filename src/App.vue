@@ -30,7 +30,7 @@
 
 
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :currentPlayer="currentPlayer" :key="lang"/>
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
   </div>
 </template>
@@ -253,12 +253,6 @@ input {
 input:focus {
     transition: all .5s;
     color: black;
-}
-
-
-
-.resource {
-    border: .5px solid gainsboro;
 }
 
 .info {
