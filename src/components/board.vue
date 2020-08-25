@@ -90,12 +90,12 @@ export default {
     },
 
     buildVillage: function () {
-      this.$emit("createAction", "buildVillage", this.nodeModal, [{type: "GRAIN", value: 1},{type: "WOOL", value: 1},{type: "WOOD", value: 1},{type: "STONE", value: 1}]);
+      this.$emit("createAction", "buildVillage", this.nodeModal, [{type: "GRAIN", value: -1},{type: "WOOL", value: -1},{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
       this.nodeModal = null;
     },
 
     buildCity: function () {
-      this.$emit("createAction", "buildCity", this.nodeModal, [{type: "GRAIN", value: 2},{type: "ORE", value: 3}]);
+      this.$emit("createAction", "buildCity", this.nodeModal, [{type: "GRAIN", value: -2},{type: "ORE", value: -3}]);
       this.nodeModal = null;
     },
 
@@ -123,7 +123,7 @@ export default {
     },
 
     buildRoad: function () {
-      this.$emit("createAction", "buildRoad", this.edgeModal, [{type: "WOOD", value: 1},{type: "STONE", value: 1}]);
+      this.$emit("createAction", "buildRoad", this.edgeModal, [{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
       this.edgeModal = null;
     },
 
