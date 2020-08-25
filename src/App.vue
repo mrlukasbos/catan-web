@@ -53,6 +53,7 @@ export default {
 
   data: function() {
     return {
+      connected: false,
       socket: null,
       board: null,
       players: [],
@@ -96,7 +97,9 @@ export default {
           this.kill_socket();
       }
 
-      this.socket.onopen = () => {}
+      this.socket.onopen = () => {
+          this.connected = true;
+      }
       
       this.socket.onmessage = (data) => {
         var message = data.data.toString();
@@ -111,6 +114,7 @@ export default {
         this.socket.close();
         delete this.socket;
       }
+      this.connected = false;
     },
     start_game: function() {
       if (this.socket) {
