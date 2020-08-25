@@ -1,5 +1,5 @@
 /*
-Translations.
+Translations. 
 
 Contents:
     - EN

@@ -50,7 +50,6 @@ export default {
       this.bandits = board.bandits;
       this.players = this.json.attributes.players;
       if (!this.svg) {
-
         this.draw_board();
       } 
       this.draw_game();

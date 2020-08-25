@@ -1,5 +1,15 @@
 <template>
   <div id="app">
+
+ <div class="modal" v-bind:class="{visible: joinModalVisible}" v-on:click.self="hide_join_modal"> 
+        <div class="modal-body"> 
+            <h2> Join the game </h2>
+            <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
+            <button v-on:click="hide_join_modal"> Cancel </button>
+            <button v-on:click="join_game"> Join </button> 
+        </div>
+    </div>
+
       <div class="header">
         <span class="title"> Catan </span>
         <div class="controls">
@@ -15,7 +25,9 @@
     </div>
     <button v-on:click="start_game"> {{T("START_GAME")}} </button>
     <button v-on:click="stop_game"> {{T("STOP_GAME")}} </button>
-    <connect v-on:connect="connect" :key="lang"/>
+
+    <button v-if="socket" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </button>
+    <connect v-else v-on:connect="connect" :key="lang"/>
     <board :json="board_data" :lang="lang" :dev_mode="dev_mode"/>
   </div>
 </template>
@@ -39,7 +51,11 @@ export default {
       board_data: null,
       lang: "EN",
       locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
-      dev_mode: false
+      dev_mode: false,
+      joinModalVisible: false,
+      player: {
+          name: ""
+      }
     }
   },
 
@@ -86,6 +102,30 @@ export default {
             this.socket.send("STOP");
         }
     },
+    selectColor: function(evt, color) {
+        this.player.color = color.code;
+    }, 
+
+    show_join_modal: function() {
+        this.joinModalVisible = true;
+    },
+    hide_join_modal: function() {
+        this.joinModalVisible = false;
+    },
+    join_game: function() {
+        console.log("registering new player: " + this.player.name);
+        console.log(this.player);
+
+        let joinMessage = JSON.stringify({
+            model: "join",
+            attributes: {
+                name: this.player.name, 
+            }
+        });
+        console.log("sending this message to CATAN SERVER: " + joinMessage);
+        this.socket.send(joinMessage);
+        this.hide_join_modal();
+    }
   }
 }
 </script>
@@ -99,6 +139,7 @@ export default {
 
 html, body {
     margin: 0;
+    background-color: #222;
 }
 
 #app {
@@ -113,9 +154,9 @@ html, body {
     justify-content: space-between;
     align-items: flex-start;
     padding: 4px;
-    background-color: #fff;
-    color: black;
-    border-bottom: 1px solid #efefef;
+    color: white;
+    border-bottom: 1px solid #444;
+    background-color: #000;
 }
 
 .title {
@@ -127,7 +168,7 @@ html, body {
 }
 
 .control {
-border-left: 1px solid #efefef;
+border-left: 1px solid #444;
 padding-left: 12px;
 padding-right: 12px;
 }
@@ -140,7 +181,7 @@ button {
     border: none;
     background-color:  rgba(46, 167, 6, 1);
     height:36px;
-    border-radius: 4px;
+    border-radius: 0px;
     color: white;
     font-weight: 100;
     padding-right: 12px;
@@ -340,6 +381,7 @@ input:focus {
     visibility: hidden;
     transition: visibility .3s, opacity .3s;
     opacity: 0;
+    z-index: 999;
 }
 
 .modal.visible {
