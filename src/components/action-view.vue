@@ -20,7 +20,10 @@
 </template>
 
 <script>
+  import ResourcesList from "./resources-list";
+
   export default {
+    components: {ResourcesList},
     props: ["currentPlayer"]
   }
 </script>
