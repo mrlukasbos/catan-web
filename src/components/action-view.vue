@@ -5,13 +5,7 @@
     </div>
     <div class="action-view__resources">
       <h2 class="action-view__resources-title"> {{T("CURRENT_RESOURCES")}} </h2>
-      <ul class="action-view__resources-list">
-        <li class="action-view__resources-item">Grain <span class="action-view__resources-count">1</span></li>
-        <li class="action-view__resources-item">Wool <span class="action-view__resources-count">1</span></li>
-        <li class="action-view__resources-item">Wood <span class="action-view__resources-count">1</span></li>
-        <li class="action-view__resources-item">Ore <span class="action-view__resources-count">1</span></li>
-        <li class="action-view__resources-item">Stone <span class="action-view__resources-count">1</span></li>
-      </ul>
+      <resources-list v-if="currentPlayer" :resources="currentPlayer.attributes.resources" size="medium"/>
     </div>
     <div class="action-view__trade">
       <button class="action-view__trade-button"> {{T("TRADE")}} </button>
@@ -26,7 +20,11 @@
 </template>
 
 <script>
+  import ResourcesList from "./resources-list";
+
   export default {
+    components: {ResourcesList},
+    props: ["currentPlayer"]
   }
 </script>
 

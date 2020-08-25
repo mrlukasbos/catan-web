@@ -27,10 +27,10 @@
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
-    
+
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :currentPlayer="currentPlayer" :key="lang"/>
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
@@ -264,10 +264,6 @@ input {
 input:focus {
     transition: all .5s;
     color: black;
-}
-
-.resource {
-    border: .5px solid gainsboro;
 }
 
 .info {
