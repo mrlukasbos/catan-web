@@ -12,7 +12,7 @@ import {T} from '../translations'
 
 export default {
   name: 'connect',
-  props: ['json', 'lang', 'dev_mode'],
+  props: ['board', 'players', 'lang', 'dev_mode'],
 
   data: function() {
       return {
@@ -23,7 +23,6 @@ export default {
         edges: [],
         nodes: [],
         bandits: [],
-        players: [],
         svg_board: null,
         svg_game: null,
       }
@@ -42,13 +41,12 @@ export default {
   },
 
   watch: { 
-    json: function() {
-      let board = this.json.attributes.board.attributes;
+    board: function() {
+      let board = this.board;
       this.tiles = board.tiles;
       this.edges = board.edges;
       this.nodes = board.nodes;
       this.bandits = board.bandits;
-      this.players = this.json.attributes.players;
       if (!this.svg) {
         this.draw_board();
       } 

@@ -33,6 +33,10 @@ t_EN["TRADE"] = "trade";
 t_EN["CURRENT_RESOURCES"] = "current resources";
 t_EN["ACTIONS_HINT"] = "You have not chosen any actions for this turn yet. Click on the board to build streets, villages and cities or click the trade button to trade resources.";
 t_EN["FINISH_TURN"] = "Finish turn";
+t_EN["NO_PLAYERS_CONNECTED"] = "no players connected";
+t_EN["DEVELOPMENT_CARDS"] = "development cards";
+t_EN["RESOURCES"] = "resources";
+t_EN["UNUSED"] = "unused";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -59,6 +63,10 @@ t_NL["TRADE"] = "handelen";
 t_NL["CURRENT_RESOURCES"] = "huidige grondstoffen";
 t_NL["ACTIONS_HINT"] = "Je hebt nog geen acties gekozen voor deze beurt. Klik op het bord om straten, dorpen en steden te bouwen of klik op de handel knop om grondstoffen te verhandelen.";
 t_NL["FINISH_TURN"] = "beëindig beurt";
+t_NL["NO_PLAYERS_CONNECTED"] = "geen spelers verbonden";
+t_NL["DEVELOPMENT_CARDS"] = "ontwikkelingskaarten";
+t_NL["RESOURCES"] = "grondstoffen";
+t_NL["UNUSED"] = "ongebruikt";
 
  // lowercase translation
 function t(key) {
