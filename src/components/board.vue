@@ -2,13 +2,13 @@
   <div class="board">
     <modal :visible="nodeModal">
       <h2> Create a action for this node </h2>
-      <button v-on:click="buildVillage"> Build village </button>
-      <button v-on:click="buildCity"> Build city </button>
+      <button v-on:click="buildVillage" v-if="nodeVillageAllowed"> Build village </button>
+      <button v-on:click="buildCity" v-if="nodeCityAllowed"> Build city </button>
       <button v-on:click="closeNodeModal"> Cancel </button>
     </modal>
     <modal :visible="edgeModal">
       <h2> Create a action for this edge </h2>
-      <button v-on:click="buildRoad"> Build road </button>
+      <button v-on:click="buildRoad" v-if="edgeRoadAllowed"> Build road </button>
       <button v-on:click="closeEdgeModal"> Cancel </button>
     </modal>
     <modal :visible="tileModal">
@@ -29,37 +29,46 @@ import modal from './modal.vue';
 
 export default {
   name: 'connect',
-  props: ['board', 'players', 'lang', 'dev_mode'],
+  props: ['board', 'players', 'lang', 'dev_mode', 'ownTurn', 'me'],
   components: {modal},
 
-  data: function() {
-      return {
-        init: false,
-        width: 1050,
-        height: 900,
-        radius: 75,
-        tiles: [],
-        edges: [],
-        nodes: [],
-        bandits: [],
-        svg_board: null,
-        svg_game: null,
-        nodeModal: null,
-        edgeModal: null,
-        tileModal: null,
-      }
+  data:  function() {
+    return {
+      init: false,
+      width: 1050,
+      height: 900,
+      radius: 75,
+      tiles: [],
+      edges: [],
+      nodes: [],
+      bandits: [],
+      svg_board: null,
+      svg_game: null,
+      nodeModal: null,
+      edgeModal: null,
+      tileModal: null,
+    };
   },
 
   computed: {
-      topology: function() {
-          return this.hexTopology(this.radius, this.width, this.height);
-      },
-      projection: function() {
-          return this.hexProjection(this.radius);
-      },
-      path: function() {
-          return d3.geoPath().projection(this.projection);
-      }
+    topology: function() {
+      return this.hexTopology(this.radius, this.width, this.height);
+    },
+    projection: function() {
+      return this.hexProjection(this.radius);
+    },
+    path: function() {
+      return d3.geoPath().projection(this.projection);
+    },
+    nodeVillageAllowed: function () {
+      return this.villageAllowed(this.nodeModal);
+    },
+    nodeCityAllowed: function () {
+      return this.cityAllowed(this.nodeModal);
+    },
+    edgeRoadAllowed: function () {
+      return this.roadAllowed(this.edgeModal);
+    }
   },
 
   watch: {
@@ -84,14 +93,29 @@ export default {
   },
 
   methods: {
-    click_node: function(data) {
-      console.log({"clicked-node":data});
-      this.nodeModal = data;
+    click_node: function (data) {
+      if (this.ownTurn) {
+        this.nodeModal = data;
+      }
+    },
+
+    villageAllowed: function (node) {
+      if (node) {
+        return true;
+      }
+      return false;
     },
 
     buildVillage: function () {
       this.$emit("createAction", "buildVillage", this.nodeModal, [{type: "GRAIN", value: -1},{type: "WOOL", value: -1},{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
       this.nodeModal = null;
+    },
+
+    cityAllowed: function (node) {
+      if (node && node.structure === "VILLAGE" && node.player === this.me.id) {
+        return true;
+      }
+      return false;
     },
 
     buildCity: function () {
@@ -103,9 +127,10 @@ export default {
       this.nodeModal = null;
     },
 
-    click_tile: function(data) {
-      console.log({"clicked-tile":data});
-      this.tileModal = data;
+    click_tile: function (data) {
+      if (this.ownTurn) {
+        this.tileModal = data;
+      }
     },
 
     placeBandit: function () {
@@ -117,9 +142,17 @@ export default {
       this.tileModal = null;
     },
 
-    click_edge: function(data) {
-      console.log({"clicked-edge":data});
-      this.edgeModal = data;
+    click_edge: function (data) {
+      if (this.ownTurn) {
+        this.edgeModal = data;
+      }
+    },
+
+    roadAllowed: function (edge) {
+      if (edge && edge.road === false) {
+        return true;
+      }
+      return false;
     },
 
     buildRoad: function () {

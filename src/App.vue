@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
+    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" :ownTurn="ownTurn" :me="me" v-on:createAction="createAction"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
