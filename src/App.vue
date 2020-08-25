@@ -30,7 +30,7 @@
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :currentPlayer="me" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :key="lang"/>
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
@@ -83,17 +83,17 @@ export default {
   },
 
   computed: {
-      // the player who is not 
+      // the player who is not
       currentPlayer: function() {
           let self = this;
           return this.players.find(function(player) {
-              player.id == self.currentPlayerId;
+            return player.attributes.id === self.currentPlayerId;
           })
       },
       me: function() {
-            let self = this;
-            return this.players.find(function(player) {
-              player.id == self.player.id;
+          let self = this;
+          return this.players.find(function(player) {
+            return player.attributes.id === self.player.id;
           })
       },
       ownTurn: function() {

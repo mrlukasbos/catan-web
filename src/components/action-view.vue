@@ -5,7 +5,7 @@
     </div>
     <div class="action-view__resources">
       <h2 class="action-view__resources-title"> {{T("CURRENT_RESOURCES")}} </h2>
-      <resources-list v-if="currentPlayer" :resources="currentPlayer.attributes.resources" size="medium"/>
+      <resources-list v-if="me" :resources="me.attributes.resources" size="medium"/>
     </div>
     <div class="action-view__trade">
       <button class="action-view__trade-button"> {{T("TRADE")}} </button>
@@ -24,7 +24,7 @@
 
   export default {
     components: {ResourcesList},
-    props: ["currentPlayer"]
+    props: ["me"]
   }
 </script>
 
@@ -61,7 +61,7 @@
   }
 
   .action-view__resources-title {
-    margin: 0;
+    margin: 0 0 4px 0;
   }
 
   .action-view__actions {
