@@ -47,7 +47,7 @@ export default {
       this.edges = board.edges;
       this.nodes = board.nodes;
       this.bandits = board.bandits;
-      if (!this.svg) {
+      if (!this.svg_board) {
         this.draw_board();
       } 
       this.draw_game();
