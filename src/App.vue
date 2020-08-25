@@ -30,7 +30,7 @@
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :currentPlayer="currentPlayer" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :currentPlayer="me" :key="lang"/>
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
@@ -67,7 +67,9 @@ export default {
       dev_mode: false,
       joinModalVisible: false,
       currentPlayerId: 1,
+      recentResponse: null,
       player: {
+          id: -1,
           name: ""
       }
     }
@@ -81,14 +83,21 @@ export default {
   },
 
   computed: {
+      // the player who is not 
       currentPlayer: function() {
           let self = this;
           return this.players.find(function(player) {
               player.id == self.currentPlayerId;
           })
       },
+      me: function() {
+            let self = this;
+            return this.players.find(function(player) {
+              player.id == self.player.id;
+          })
+      },
       ownTurn: function() {
-        return this.socket != null;
+        return this.player.id == this.currentPlayerId;
       }
   },
 
@@ -112,14 +121,24 @@ export default {
       this.socket.onmessage = (data) => {
         var message = data.data.toString();
         let json = JSON.parse(message);
-        this.board = json.attributes.board.attributes;
-        this.players = json.attributes.players;
 
-        if (json.attributes.events) {
-            this.events = json.attributes.events.reverse();
+        if (json.model == "game") {
+            this.board = json.attributes.board.attributes;
+            this.players = json.attributes.players;
+            this.currentPlayerId = json.attributes.currentPlayer;
+
+            if (json.attributes.events) {
+                this.events = json.attributes.events.reverse();
+            }
+        } else if (json.model == "response") {
+            this.handleResponse(json.attributes);
         }
-      //  this.currentPlayerId = json.attributes.currentPlayer;
       }
+    },
+    handleResponse: function(response) {
+        if (response.code == 1) {
+            this.player.id = parseInt(response.additional_info);
+        }
     },
     kill_socket: function () {
       if (this.socket) {
