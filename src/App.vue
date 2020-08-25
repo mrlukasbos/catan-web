@@ -27,10 +27,10 @@
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
-
+    
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode"/>
-    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"> </players-view>
-        <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
+    <players-view :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :key="lang"/>
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>

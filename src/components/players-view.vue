@@ -60,7 +60,7 @@
     width: 400px;
     color: white;
     border-radius: 4px;
-    left: -400px;
+    left: 24px;
     top: 64px;
     transition: right 300ms;
   }
