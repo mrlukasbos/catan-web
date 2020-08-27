@@ -47,6 +47,9 @@ export default {
         nodeModal: null,
         edgeModal: null,
         tileModal: null,
+
+        d3_nodes: null,
+        d3_edges: null,
       }
   },
 
@@ -62,6 +65,16 @@ export default {
       }
   },
 
+  mounted: function(){
+    this.svg_game = d3.select("#d3-game-holder").append("svg")
+            .attr("width", this.width)
+            .attr("height", this.height);
+
+    this.svg_board = d3.select("#d3-board-holder").append("svg")
+        .attr("width", this.width)
+        .attr("height", this.height);
+  },
+
   watch: {
     board: function() {
       let board = this.board;
@@ -73,17 +86,108 @@ export default {
         this.draw_board();
         this.init = true;
       }
-      this.draw_game();
     },
     lang: function() {
       this.draw_board();
     },
     dev_mode: function() {
       this.draw_board();
+    },
+    nodes: function() {
+      this.updateNodes();
+    },
+    edges: function() {
+      this.updateEdges();
     }
   },
 
+
   methods: {
+    createNodes() {
+                        console.log("creating nodes");
+
+      let self =this;
+        this.d3_nodes = this.svg_game.append("g")
+            .attr("class", "nodes")
+            .selectAll("path")
+            .data(self.nodes.map(function(n) {
+                return n.attributes;
+            })).enter().append("path")
+            .attr("transform", function (d) {
+                var coordinate = self.path.centroid(topojson.merge(self.topology, [
+                    self.getHexByKey(d.t_key),
+                    self.getHexByKey(d.l_key),
+                    self.getHexByKey(d.r_key)
+                ]));
+                return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+            });
+    },
+    updateNodes() {
+            console.log("updating nodes");
+
+      let self = this;
+      this.d3_nodes.data(self.nodes.map(function(n) {
+          return n.attributes;
+      }));
+
+      this.d3_nodes.attr("d", function (d) {
+            if (d.structure == "VILLAGE") {
+                return "M0 -10 L10 -2 L10 10 L-10 10 L-10 -2 L0 -10 Z"
+            } else if (d.structure == "CITY") {
+                return "M-12 -2 L1 -2 L1 -10 L6 -12 L11 -10 L11 12 L-12 12 L-12 -2 Z"
+            } else {
+                return "m -7.5, 0 a 7.5,7.5 0 1,0 15,0 a 7.5,7.5 0 1,0 -15,0"
+            }
+        }).attr('fill', function (d) {
+            return d.player_color;
+        }).attr("class", function(d) {
+            if (d.structure == "VILLAGE") {
+                return "node node--village"
+            } else if (d.structure == "CITY") {
+                return "node node--city"
+            }
+            return "node node--empty"
+        })
+        .on("click", function(d) { self.click_node(d) });
+    },
+
+    createEdges() {
+        console.log("creating edges");
+       let self = this;
+        this.d3_edges = this.svg_game.append("g")
+            .attr("class", "borders")
+            .selectAll("path")
+            .data(self.edges)
+            .enter().append("path")    
+            .attr("d", function (d) {
+                return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
+                  var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+                  var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
+                  return (edge1 == d || edge2 == d);
+                }))
+            })
+            .on("click", function(d) { self.click_edge(d.attributes) });
+    },
+
+    updateEdges() {
+             let self = this;
+      console.log("updating edges");
+      this.d3_edges.data(self.edges);
+      this.d3_edges.attr("stroke", function (d) {
+              if (d.attributes.road) {
+                return d.attributes.player_color;
+              }
+              return "#fff";
+            })
+            .attr("class", function (d) {
+          if (d.attributes.road) {
+            return "border border--road"
+          } else {
+            return "border border--empty"
+          }
+        })
+    },
+
     click_node: function(data) {
       console.log({"clicked-node":data});
       this.nodeModal = data;
@@ -224,74 +328,15 @@ export default {
 
     draw_game: function() {
 
-        if (this.svg_game) this.svg_game.remove();
+   //     if (this.svg_game) this.svg_game.remove();
 
-        this.svg_game = d3.select("#d3-game-holder").append("svg")
-          .attr("width", this.width)
-          .attr("height", this.height);
+      
 
       let self = this;
-        this.svg_game.append("g")
-            .attr("class", "borders")
-            .selectAll("path")
-            .data(self.edges)
-            .enter().append("path")
-            .attr("stroke", function (d) {
-              if (d.attributes.road) {
-                return d.attributes.player_color;
-              }
-              return "#fff";
-            })
-            .attr("class", function (d) {
-              if (d.attributes.road) {
-                return "border border--road"
-              } else {
-                return "border border--empty"
-              }
-            })
-            .attr("d", function (d) {
-                return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
-                  var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
-                  var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
-                  return (edge1 == d || edge2 == d);
-                }))
-            })
-            .on("click", function(d) { self.click_edge(d.attributes) });
+        
 
-        this.svg_game.append("g")
-            .attr("class", "nodes")
-            .selectAll("path")
-            .data(self.nodes.map(function(n) {
-                return n.attributes;
-            }))
-            .enter().append("path")
-            .attr("transform", function (d) {
-                var coordinate = self.path.centroid(topojson.merge(self.topology, [
-                    self.getHexByKey(d.t_key),
-                    self.getHexByKey(d.l_key),
-                    self.getHexByKey(d.r_key)
-                ]));
-                return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-            })
-            .attr("d", function (d) {
-                if (d.structure == "VILLAGE") {
-                    return "M0 -10 L10 -2 L10 10 L-10 10 L-10 -2 L0 -10 Z"
-                } else if (d.structure == "CITY") {
-                    return "M-12 -2 L1 -2 L1 -10 L6 -12 L11 -10 L11 12 L-12 12 L-12 -2 Z"
-                } else {
-                    return "m -7.5, 0 a 7.5,7.5 0 1,0 15,0 a 7.5,7.5 0 1,0 -15,0"
-                }
-            }).attr('fill', function (d) {
-                return d.player_color;
-            }).attr("class", function(d) {
-                if (d.structure == "VILLAGE") {
-                    return "node node--village"
-                } else if (d.structure == "CITY") {
-                    return "node node--city"
-                }
-                return "node node--empty"
-            })
-            .on("click", function(d) { self.click_node(d) });
+    
+
 
         this.svg_game.append("g")
             .attr("class", "bandits")
@@ -305,12 +350,14 @@ export default {
             .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
       },
       draw_board: function() {
-      var self = this;
-      if (this.svg_board) this.svg_board.remove();
 
-        this.svg_board = d3.select("#d3-board-holder").append("svg")
-          .attr("width", this.width)
-          .attr("height", this.height);
+        console.log("creating board")
+      var self = this;
+
+      if (this.svg_board) this.svg_board.remove();
+    this.svg_board = d3.select("#d3-board-holder").append("svg")
+        .attr("width", this.width)
+        .attr("height", this.height);
 
       let svg = this.svg_board;
 
@@ -400,7 +447,12 @@ export default {
           .attr("stroke", "#247aff")
           .call(self.redrawHarbour);
 
+      this.createEdges();
+      this.createNodes();
+
       }
+
+      
   }
 }
 </script>
