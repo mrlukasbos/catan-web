@@ -89,10 +89,10 @@ export default {
       }
     },
     lang: function() {
-      this.draw_board();
+      this.updateTypes();
     },
     dev_mode: function() {
-      this.draw_board();
+      this.updateLabels();
     },
     nodes: function() {
       this.updateNodes();
@@ -106,6 +106,8 @@ export default {
     tiles: function() {
       this.updateTiles();
       this.updateTypes();
+      this.updateLabels();
+      this.updateNumbers();
     }
   },
 
@@ -141,6 +143,58 @@ export default {
           }
           return T(str);
       });
+    },
+    
+    createLabels() {
+      let self = this;
+      this.d3_labels = this.svg_board.append("g")
+        .attr("class", "labels")
+        .selectAll("path")
+        .data(self.topology.objects.hexagons.geometries)
+        .enter().append("text")
+        .attr("x", function (d) {
+          return self.path.centroid(topojson.feature(self.topology, d))[0];
+        })
+        .attr("y", function (d) {
+          return self.path.centroid(topojson.feature(self.topology, d))[1];
+        })
+        .attr("text-anchor", "middle");
+    },
+
+    updateLabels() {
+      let self = this;
+      this.d3_labels.data(self.topology.objects.hexagons.geometries)
+      this.d3_labels.attr("visibility", function() {
+        return self.dev_mode ? "visible" : "hidden";
+      })
+      .text(function (d) {
+        return d.tile.attributes.key;
+      })
+    },
+
+    createNumbers() {
+      let self = this;
+      this.d3_numbers = this.svg_board.append("g")
+        .attr("class", "numbers")
+        .selectAll("path")
+        .data(self.topology.objects.hexagons.geometries)
+        .enter().append("text")
+        .attr("x", function (d) {
+          return self.path.centroid(topojson.feature(self.topology, d))[0];
+        })
+        .attr("y", function (d) {
+          return self.path.centroid(topojson.feature(self.topology, d))[1] - 20;
+        })
+        .attr("text-anchor", "middle");
+    },
+
+    updateNumbers() {
+        let self = this;
+        this.d3_numbers.data(self.topology.objects.hexagons.geometries)
+        this.d3_numbers.text(function (d) {
+          if (d.tile.attributes.number > 0) return d.tile.attributes.number;
+          return "";
+        })
     },
 
     createTiles() {
@@ -420,58 +474,15 @@ export default {
     },  
 
     draw_board: function() {
-
-      var self = this;
-
       if (this.svg_board) this.svg_board.remove();
-
-    this.svg_board = d3.select("#d3-board-holder").append("svg")
+      this.svg_board = d3.select("#d3-board-holder").append("svg")
         .attr("width", this.width)
         .attr("height", this.height);
 
-      let svg = this.svg_board;
-
-    
       this.createTiles();
-
-      svg.append("g")
-          .attr("class", "numbers")
-          .selectAll("path")
-          .data(self.topology.objects.hexagons.geometries)
-          .enter().append("text")
-          .attr("x", function (d) {
-            return self.path.centroid(topojson.feature(self.topology, d))[0];
-          })
-          .attr("y", function (d) {
-            return self.path.centroid(topojson.feature(self.topology, d))[1] - 20;
-          })
-          .text(function (d) {
-            if (d.tile.attributes.number > 0) return d.tile.attributes.number;
-            return "";
-          })
-          .attr("text-anchor", "middle");
-
-      if (self.dev_mode) {
-        svg.append("g")
-            .attr("class", "labels")
-            .selectAll("path")
-            .data(self.topology.objects.hexagons.geometries)
-            .enter().append("text")
-            .attr("x", function (d) {
-              return self.path.centroid(topojson.feature(self.topology, d))[0];
-            })
-            .attr("y", function (d) {
-              return self.path.centroid(topojson.feature(self.topology, d))[1];
-            })
-            .text(function (d) {
-              return d.tile.attributes.key;
-            })
-            .attr("text-anchor", "middle");
-      }
-
-
-
       this.createTypes();
+      this.createLabels();
+      this.createNumbers();
       this.createHarbours(); 
       this.createEdges();
       this.createNodes();
