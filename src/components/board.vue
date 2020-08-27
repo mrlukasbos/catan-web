@@ -50,6 +50,7 @@ export default {
 
         d3_nodes: null,
         d3_edges: null,
+        d3_bandits: null,
       }
   },
 
@@ -65,7 +66,7 @@ export default {
       }
   },
 
-  mounted: function(){
+  mounted: function() {
     this.svg_game = d3.select("#d3-game-holder").append("svg")
             .attr("width", this.width)
             .attr("height", this.height);
@@ -98,15 +99,37 @@ export default {
     },
     edges: function() {
       this.updateEdges();
+    },
+    bandits: function() {
+      this.updateBandits();
     }
   },
 
-
-  methods: {
+  methods: {    
+    createBandits() {
+      let self = this;
+        this.d3_bandits = this.svg_game.append("g")
+            .attr("class", "bandits")
+            .selectAll("path")
+            .data(self.bandits)
+            .enter().append("path")
+            .attr("transform", function (d) {
+              var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+            })
+            .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
+      },
+    updateBandits() {
+        let self = this;
+        this.d3_bandits.data(self.bandits);
+        this.d3_bandits.attr("transform", function (d) {
+          var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+          return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+        });
+    },
     createNodes() {
-                        console.log("creating nodes");
-
-      let self =this;
+      console.log("creating nodes");
+      let self = this;
         this.d3_nodes = this.svg_game.append("g")
             .attr("class", "nodes")
             .selectAll("path")
@@ -324,32 +347,8 @@ export default {
         objects: {hexagons: {type: "GeometryCollection", geometries: geometries}},
         arcs: arcs
       };
-    },
-
-    draw_game: function() {
-
-   //     if (this.svg_game) this.svg_game.remove();
-
-      
-
-      let self = this;
-        
-
-    
-
-
-        this.svg_game.append("g")
-            .attr("class", "bandits")
-            .selectAll("path")
-            .data(self.bandits)
-            .enter().append("path")
-            .attr("transform", function (d) {
-              var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
-              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-            })
-            .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
-      },
-      draw_board: function() {
+    },  
+    draw_board: function() {
 
         console.log("creating board")
       var self = this;
@@ -449,12 +448,11 @@ export default {
 
       this.createEdges();
       this.createNodes();
-
-      }
-
-      
+      this.createBandits();     
   }
 }
+}
+
 </script>
 
 <style scoped>
