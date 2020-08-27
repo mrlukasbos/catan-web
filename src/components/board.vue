@@ -56,6 +56,8 @@ export default {
         d3_edges: null,
         d3_bandits: null,
         d3_types: null,
+        d3_labels: null,
+        d3_numbers: null,
       }
   },
 
@@ -130,6 +132,7 @@ export default {
     },
     
     updateTypes() {
+      if (!this.d3_types) return;
       let self = this;
       this.d3_types.data(self.topology.objects.hexagons.geometries)
       this.d3_types.text(function (d) {
@@ -162,6 +165,8 @@ export default {
     },
 
     updateLabels() {
+      if (!this.d3_labels) return;
+
       let self = this;
       this.d3_labels.data(self.topology.objects.hexagons.geometries)
       this.d3_labels.attr("visibility", function() {
@@ -189,6 +194,8 @@ export default {
     },
 
     updateNumbers() {
+        if (!this.d3_numbers) return;
+
         let self = this;
         this.d3_numbers.data(self.topology.objects.hexagons.geometries)
         this.d3_numbers.text(function (d) {
@@ -223,6 +230,7 @@ export default {
     
     // When updating tiles the classname can change
     updateTiles() {
+      if (!this.d3_tiles) return;
       let self = this;
       this.d3_tiles.data(self.topology.objects.hexagons.geometries);
       this.d3_tiles.attr("d", function (d) {
@@ -247,6 +255,7 @@ export default {
     },
 
     updateBandits() {
+      if (!this.d3_bandits) return;
       let self = this;
       this.d3_bandits.data(self.bandits);
       this.d3_bandits.attr("transform", function (d) {
@@ -298,6 +307,8 @@ export default {
     },
 
     updateNodes() {
+      if (!this.d3_nodes) return;
+
       let self = this;
       this.d3_nodes.data(self.nodes.map(function(n) {
           return n.attributes;
@@ -341,6 +352,7 @@ export default {
     },
 
     updateEdges() {
+      if (!this.d3_edges) return;
       let self = this;
       this.d3_edges.data(self.edges);
       this.d3_edges.attr("stroke", function (d) {

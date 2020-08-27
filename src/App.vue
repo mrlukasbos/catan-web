@@ -75,6 +75,15 @@ export default {
     }
   },
 
+  // autoconnect on start
+  mounted: function() {
+    console.log("catan dev mode enabled")
+    this.dev_mode = true;
+
+    console.log("autoconnecting...")
+    this.connect("localhost", 10007);
+  },
+
   watch: {
     lang: function() {
         setGlobalLanguage(this.lang);
@@ -449,7 +458,6 @@ input:focus {
 .node--empty:hover {
     opacity: .75;
     cursor: pointer;
-    /* stroke-width: 5px; */
 }
 
 .tile {
