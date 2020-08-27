@@ -27,7 +27,9 @@
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
@@ -145,7 +147,6 @@ export default {
       }
     },
     sendClientResponse: function(response) {
-
         let msg = {
             model: "client-response",
             attributes: response
@@ -155,14 +156,27 @@ export default {
           this.socket.send(JSON.stringify(msg));
         }
     },
+
     clearActions: function() {
         this.actions = [];
     },
+
     handleResponse: function(response) {
-        if (response.code == 1) {
+        if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
+        } else if (response.code == 100) { // trade request
+
+        } else if (response.code == 101) { // build request
+
+        } else if (response.code == 102) { // initial build request
+        
+        } else if (response.code == 103) { // move bandit request
+        
+        } else if (response.code == 104) { // discard resources request
+        
         }
     },
+
     kill_socket: function () {
       if (this.socket) {
         this.socket.close();
