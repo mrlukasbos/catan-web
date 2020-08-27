@@ -263,15 +263,38 @@ export default {
           .data(self.nodes.map(function(n) {
               return n.attributes;
           })).enter().append("path")
+          // .attr("style", function(d) {
+          //   transform: translate(194px,487px) scale(1.1);
+          // })
           .attr("transform", function (d) {
               var coordinate = self.path.centroid(topojson.merge(self.topology, [
-                  self.getHexByKey(d.t_key),
-                  self.getHexByKey(d.l_key),
-                  self.getHexByKey(d.r_key)
+                  self.getHexByKey(d.t_key), self.getHexByKey(d.l_key), self.getHexByKey(d.r_key)
               ]));
-              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+              return "translate(" + coordinate[0] + "," + coordinate[1] + ") scale(1.0)";
           })
-          .on("click", function(d) { self.click_node(d) });
+          .on("click", function(d) { self.click_node(d) })
+          .on("mouseover", function () {
+            d3.select(this)
+           .transition()
+           .duration(300)
+           .attr("transform", function (d) {
+              var coordinate = self.path.centroid(topojson.merge(self.topology, [
+                  self.getHexByKey(d.t_key), self.getHexByKey(d.l_key), self.getHexByKey(d.r_key)
+              ]));
+              return "translate(" + coordinate[0] + "," + coordinate[1] + ") scale(1.2)";
+            })
+          })
+          .on("mouseout", function () {
+          d3.select(this)
+          .transition()
+          .duration(300)
+          .attr("transform", function (d) {
+            var coordinate = self.path.centroid(topojson.merge(self.topology, [
+                self.getHexByKey(d.t_key), self.getHexByKey(d.l_key), self.getHexByKey(d.r_key)
+            ]));
+            return "translate(" + coordinate[0] + "," + coordinate[1] + ") scale(1.0)";
+          })
+        });
     },
 
     updateNodes() {

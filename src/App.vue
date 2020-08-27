@@ -492,5 +492,8 @@ input:focus {
     transition: border .5s;
 }
 
+.node--village, .node--city  {
+    cursor: pointer;
+}
 
 </style>
