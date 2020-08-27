@@ -51,9 +51,11 @@ export default {
         edgeModal: null,
         tileModal: null,
 
+        d3_tiles: null,
         d3_nodes: null,
         d3_edges: null,
         d3_bandits: null,
+        d3_types: null,
       }
   },
 
@@ -103,12 +105,46 @@ export default {
     },
     tiles: function() {
       this.updateTiles();
+      this.updateTypes();
     }
   },
 
   methods: {    
+
+    createTypes() {
+      let self = this;
+      this.d3_types = this.svg_board.append("g")
+          .attr("class", "types")
+          .selectAll("path")
+          .data(self.topology.objects.hexagons.geometries)
+          .enter().append("text")
+          .attr("x", function (d) {
+            return self.path.centroid(topojson.feature(self.topology, d))[0];
+          })
+          .attr("y", function (d) {
+            return self.path.centroid(topojson.feature(self.topology, d))[1] + 15;
+          })
+          .attr("text-anchor", "middle");
+    },
+    
+    updateTypes() {
+      let self = this;
+      this.d3_types.data(self.topology.objects.hexagons.geometries)
+      this.d3_types.text(function (d) {
+          var str = "";
+          if (d.tile.attributes.resource_type === "SEA") {
+            if (d.tile.attributes.harbour_type !== "HARBOUR_NONE") {
+              str = d.tile.attributes.harbour_type;
+            }
+          } else {
+              str = d.tile.attributes.resource_type;
+          }
+          return T(str);
+      });
+    },
+
     createTiles() {
-    let self = this;
+      let self = this;
       this.d3_tiles = this.svg_board.append("g")
         .attr("class", "hexagon")
         .selectAll("path")
@@ -121,6 +157,14 @@ export default {
           return "tile " + d.tile.attributes.resource_type;
         })
         .on("click", function(d) { self.click_tile(d.tile.attributes) });
+    },
+
+    createHarbours() {
+      let self = this;
+      this.svg_board.append("path")
+        .attr("class", "harbour-edge")
+        .attr("stroke", "#247aff")
+        .call(self.redrawHarbour);
     },
     
     // When updating tiles the classname can change
@@ -425,44 +469,10 @@ export default {
             .attr("text-anchor", "middle");
       }
 
-      svg.append("g")
-          .attr("class", "types")
-          .selectAll("path")
-          .data(self.topology.objects.hexagons.geometries)
-          .enter().append("text")
-          .attr("x", function (d) {
-            return self.path.centroid(topojson.feature(self.topology, d))[0];
-          })
-          .attr("y", function (d) {
-            return self.path.centroid(topojson.feature(self.topology, d))[1] + 15;
-          })
-          .text(function (d) {
-              var str = "";
-              if (d.tile.attributes.resource_type === "SEA") {
-                if (d.tile.attributes.harbour_type !== "HARBOUR_NONE") {
-                  str = d.tile.attributes.harbour_type;
-                }
-              } else {
-                  str = d.tile.attributes.resource_type;
-              }
-              return T(str);
-          })
-          .attr("text-anchor", "middle");
 
 
-
-      svg.append("path")
-          .datum(topojson.mesh(self.topology, self.topology.objects.hexagons))
-          .attr("class", "mesh")
-          .attr("stroke", "#ffffff")
-          .attr("stroke-width", 1)
-          .attr("d", self.path);
-
-      svg.append("path")
-          .attr("class", "harbour-edge")
-          .attr("stroke", "#247aff")
-          .call(self.redrawHarbour);
-
+      this.createTypes();
+      this.createHarbours(); 
       this.createEdges();
       this.createNodes();
       this.createBandits();     
