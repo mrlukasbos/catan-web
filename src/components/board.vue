@@ -2,17 +2,20 @@
   <div class="board">
     <modal :visible="nodeModal">
       <h2> Create a action for this node </h2>
+      <code v-if="dev_mode"> {{nodeModal}} </code> 
       <button v-on:click="buildVillage"> Build village </button>
       <button v-on:click="buildCity"> Build city </button>
       <button v-on:click="closeNodeModal"> Cancel </button>
     </modal>
     <modal :visible="edgeModal">
       <h2> Create a action for this edge </h2>
+      <code v-if="dev_mode"> {{edgeModal}} </code>
       <button v-on:click="buildRoad"> Build road </button>
       <button v-on:click="closeEdgeModal"> Cancel </button>
     </modal>
     <modal :visible="tileModal">
       <h2> Create a action for this tile </h2>
+      <code v-if="dev_mode"> {{tileModal}} </code>
       <button v-on:click="placeBandit"> Place bandit </button>
       <button v-on:click="closeTileModal"> Cancel </button>
     </modal>
@@ -371,12 +374,13 @@ export default {
         arcs: arcs
       };
     },  
+
     draw_board: function() {
 
-        console.log("creating board")
       var self = this;
 
       if (this.svg_board) this.svg_board.remove();
+
     this.svg_board = d3.select("#d3-board-holder").append("svg")
         .attr("width", this.width)
         .attr("height", this.height);
