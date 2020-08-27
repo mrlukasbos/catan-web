@@ -67,13 +67,8 @@ export default {
   },
 
   mounted: function() {
-    this.svg_game = d3.select("#d3-game-holder").append("svg")
-            .attr("width", this.width)
-            .attr("height", this.height);
-
-    this.svg_board = d3.select("#d3-board-holder").append("svg")
-        .attr("width", this.width)
-        .attr("height", this.height);
+    this.svg_game = d3.select("#d3-game-holder").append("svg").attr("width", this.width).attr("height", this.height);
+    this.svg_board = d3.select("#d3-board-holder").append("svg").attr("width", this.width).attr("height", this.height);
   },
 
   watch: {
@@ -102,52 +97,83 @@ export default {
     },
     bandits: function() {
       this.updateBandits();
+    },
+    tiles: function() {
+      this.updateTiles();
     }
   },
 
   methods: {    
+    createTiles() {
+    let self = this;
+      this.d3_tiles = this.svg_board.append("g")
+        .attr("class", "hexagon")
+        .selectAll("path")
+        .data(self.topology.objects.hexagons.geometries)
+        .enter().append("path")
+        .attr("d", function (d) {
+          return self.path(topojson.feature(self.topology, d));
+        })
+        .attr("class", function (d) {
+          return "tile " + d.tile.attributes.resource_type;
+        })
+        .on("click", function(d) { self.click_tile(d.tile.attributes) });
+    },
+    
+    // When updating tiles the classname can change
+    updateTiles() {
+      let self = this;
+      this.d3_tiles.data(self.topology.objects.hexagons.geometries);
+      this.d3_tiles.attr("d", function (d) {
+          return self.path(topojson.feature(self.topology, d));
+        }).attr("class", function (d) {
+        return "tile " + d.tile.attributes.resource_type;
+      })
+    },
+
     createBandits() {
       let self = this;
-        this.d3_bandits = this.svg_game.append("g")
-            .attr("class", "bandits")
-            .selectAll("path")
-            .data(self.bandits)
-            .enter().append("path")
-            .attr("transform", function (d) {
-              var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
-              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-            })
-            .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
-      },
-    updateBandits() {
-        let self = this;
-        this.d3_bandits.data(self.bandits);
-        this.d3_bandits.attr("transform", function (d) {
-          var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
-          return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-        });
+      this.d3_bandits = this.svg_game.append("g")
+          .attr("class", "bandits")
+          .selectAll("path")
+          .data(self.bandits)
+          .enter().append("path")
+          .attr("transform", function (d) {
+            var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+            return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+          })
+          .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
     },
-    createNodes() {
-      console.log("creating nodes");
-      let self = this;
-        this.d3_nodes = this.svg_game.append("g")
-            .attr("class", "nodes")
-            .selectAll("path")
-            .data(self.nodes.map(function(n) {
-                return n.attributes;
-            })).enter().append("path")
-            .attr("transform", function (d) {
-                var coordinate = self.path.centroid(topojson.merge(self.topology, [
-                    self.getHexByKey(d.t_key),
-                    self.getHexByKey(d.l_key),
-                    self.getHexByKey(d.r_key)
-                ]));
-                return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
-            });
-    },
-    updateNodes() {
-            console.log("updating nodes");
 
+    updateBandits() {
+      let self = this;
+      this.d3_bandits.data(self.bandits);
+      this.d3_bandits.attr("transform", function (d) {
+        var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+        return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+      });
+    },
+
+    createNodes() {
+      let self = this;
+      this.d3_nodes = this.svg_game.append("g")
+          .attr("class", "nodes")
+          .selectAll("path")
+          .data(self.nodes.map(function(n) {
+              return n.attributes;
+          })).enter().append("path")
+          .attr("transform", function (d) {
+              var coordinate = self.path.centroid(topojson.merge(self.topology, [
+                  self.getHexByKey(d.t_key),
+                  self.getHexByKey(d.l_key),
+                  self.getHexByKey(d.r_key)
+              ]));
+              return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
+          })
+          .on("click", function(d) { self.click_node(d) });
+    },
+
+    updateNodes() {
       let self = this;
       this.d3_nodes.data(self.nodes.map(function(n) {
           return n.attributes;
@@ -170,39 +196,36 @@ export default {
                 return "node node--city"
             }
             return "node node--empty"
-        })
-        .on("click", function(d) { self.click_node(d) });
+        });
     },
 
     createEdges() {
-        console.log("creating edges");
-       let self = this;
-        this.d3_edges = this.svg_game.append("g")
-            .attr("class", "borders")
-            .selectAll("path")
-            .data(self.edges)
-            .enter().append("path")    
-            .attr("d", function (d) {
-                return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
-                  var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
-                  var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
-                  return (edge1 == d || edge2 == d);
-                }))
-            })
-            .on("click", function(d) { self.click_edge(d.attributes) });
+      let self = this;
+      this.d3_edges = this.svg_game.append("g")
+          .attr("class", "borders")
+          .selectAll("path")
+          .data(self.edges)
+          .enter().append("path")    
+          .attr("d", function (d) {
+              return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
+                var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+                var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
+                return (edge1 == d || edge2 == d);
+              }))
+          })
+          .on("click", function(d) { self.click_edge(d.attributes) });
     },
 
     updateEdges() {
-             let self = this;
-      console.log("updating edges");
+      let self = this;
       this.d3_edges.data(self.edges);
       this.d3_edges.attr("stroke", function (d) {
-              if (d.attributes.road) {
-                return d.attributes.player_color;
-              }
-              return "#fff";
-            })
-            .attr("class", function (d) {
+          if (d.attributes.road) {
+            return d.attributes.player_color;
+          }
+          return "#fff";
+        })
+        .attr("class", function (d) {
           if (d.attributes.road) {
             return "border border--road"
           } else {
@@ -360,18 +383,8 @@ export default {
 
       let svg = this.svg_board;
 
-      svg.append("g")
-          .attr("class", "hexagon")
-          .selectAll("path")
-          .data(self.topology.objects.hexagons.geometries)
-          .enter().append("path")
-          .attr("d", function (d) {
-            return self.path(topojson.feature(self.topology, d));
-          })
-          .attr("class", function (d) {
-            return "tile " + d.tile.attributes.resource_type;
-          })
-          .on("click", function(d) { self.click_tile(d.tile.attributes) });
+    
+      this.createTiles();
 
       svg.append("g")
           .attr("class", "numbers")
