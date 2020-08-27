@@ -449,7 +449,7 @@ input:focus {
 .node--empty:hover {
     opacity: .75;
     cursor: pointer;
-    stroke-width: 5px;
+    /* stroke-width: 5px; */
 }
 
 .tile {
