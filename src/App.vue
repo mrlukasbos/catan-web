@@ -66,7 +66,7 @@ export default {
       actions: [],
       lang: "EN",
       locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
-      dev_mode: false,
+      dev_mode: true,
       joinModalVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
@@ -79,9 +79,6 @@ export default {
 
   // autoconnect on start
   mounted: function() {
-    console.log("catan dev mode enabled")
-    this.dev_mode = true;
-
     console.log("autoconnecting...")
     this.connect("localhost", 10007);
   },
