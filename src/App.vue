@@ -75,6 +75,15 @@ export default {
     }
   },
 
+  // autoconnect on start
+  mounted: function() {
+    console.log("catan dev mode enabled")
+    this.dev_mode = true;
+
+    console.log("autoconnecting...")
+    this.connect("localhost", 10007);
+  },
+
   watch: {
     lang: function() {
         setGlobalLanguage(this.lang);
@@ -285,6 +294,11 @@ button:hover {
     transition: background-color .12s;
 }
 
+code {
+    background: #efefef;
+    font-family: 'Courier New', Courier, monospace;
+}
+
 input {
     border: none;
     background: #efefef;
@@ -373,7 +387,7 @@ input:focus {
 }
 
 .border {
-    stroke-width: 7px;
+    stroke-width: 8px;
     pointer-events: visible;
     cursor: pointer;
     transition: opacity .3s, stroke-width .3s;
@@ -385,7 +399,7 @@ input:focus {
 }
 
 .border--empty {
-    opacity: .5;
+    opacity: 0;
 }
 
 .border--empty:hover {
@@ -435,7 +449,8 @@ input:focus {
 .node--empty {
     fill: #fff;
     stroke: #fff;
-    opacity: .4;
+    stroke-width: 3px;
+    opacity: 0;
     transition: opacity .3s;
     transition: stroke-width .3s;
 }
@@ -443,7 +458,6 @@ input:focus {
 .node--empty:hover {
     opacity: .75;
     cursor: pointer;
-    stroke-width: 5px;
 }
 
 .tile {
@@ -486,5 +500,8 @@ input:focus {
     transition: border .5s;
 }
 
+.node--village, .node--city  {
+    cursor: pointer;
+}
 
 </style>

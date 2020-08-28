@@ -3,10 +3,8 @@
     <div v-if="players.length">
       <div v-for="player in players" v-bind:key="player.attributes.id" :style="playerStyle(player)" class="player-card">
         <span :style="{ 'color': player.attributes.color }"> {{player.attributes.name}} <small v-if="dev_mode">({{player.attributes.id}}) </small></span>
-
         <small> {{T ("RESOURCES")}} </small>
         <resources-list :resources="player.attributes.resources"/>
-
         <small>{{T ("DEVELOPMENT_CARDS")}} ({{player.attributes.unused_development_cards}} {{t("UNUSED")}})</small>
         <div style="width: 100%; display: flex;">
           <div v-for="developmentcard in player.attributes.used_development_cards" :key="developmentcard.id">
@@ -17,10 +15,8 @@
                 {{developmentcard.value}}
               </div>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
     <div v-else class="no-connections">
