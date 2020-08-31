@@ -40,6 +40,9 @@ t_EN["RESOURCES"] = "resources";
 t_EN["UNUSED"] = "unused";
 t_EN["BUY_DEVELOPMENT"] = "buy development card";
 t_EN["CLEAR_ACTIONS"] = "clear actions";
+t_EN["WAITING_FOR_PLAYERS"] = "waiting for players";
+t_EN["WAITING_FOR_TAKEOFF"] = "waiting for takeoff";
+t_EN["GAME_RUNNING"] = "running";
 
 
 
@@ -75,6 +78,9 @@ t_NL["RESOURCES"] = "grondstoffen";
 t_NL["UNUSED"] = "ongebruikt";
 t_NL["BUY_DEVELOPMENT"] = "koop ontwikkelingskaart";
 t_NL["CLEAR_ACTIONS"] = "verwijder acties";
+t_NL["WAITING_FOR_PLAYERS"] = "wachten op spelers";
+t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot spel start";
+t_NL["GAME_RUNNING"] = "spel is gestart";
 
 
  // lowercase translation

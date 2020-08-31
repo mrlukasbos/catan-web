@@ -11,6 +11,9 @@
         <span class="title"> Catan </span>
         <div class="controls">
             <div class="control">
+                {{T(game_status)}}
+            </div>
+            <div class="control">
                 {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
             </div>
             <div class="control">
@@ -70,6 +73,7 @@ export default {
       joinModalVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
+      game_status: "",
       player: {
           id: -1,
           name: ""
@@ -124,6 +128,12 @@ export default {
 
       this.socket.onopen = () => {
           this.connected = true;
+
+          if (localStorage.getItem("id") && localStorage.getItem("name")) {
+            this.player.name = localStorage.getItem("name");
+            this.player.id = localStorage.getItem("id");
+            this.join_game();
+          }
       }
 
       this.socket.onmessage = (data) => {
@@ -134,6 +144,7 @@ export default {
             this.board = json.attributes.board.attributes;
             this.players = json.attributes.players;
             this.currentPlayerId = json.attributes.currentPlayer;
+            this.game_status = json.attributes.status;
 
             if (json.attributes.events) {
                 this.events = json.attributes.events.reverse();
@@ -161,6 +172,8 @@ export default {
     handleResponse: function(response) {
         if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
+            localStorage.setItem("name", this.player.name);
+            localStorage.setItem("id", this.player.id);
         } else if (response.code == 100) { // trade request
 
         } else if (response.code == 101) { // build request
@@ -219,6 +232,7 @@ export default {
             model: "join",
             attributes: {
                 name: this.player.name,
+                id: this.player.id,
             }
         });
         console.log("sending this message to CATAN SERVER: " + joinMessage);
