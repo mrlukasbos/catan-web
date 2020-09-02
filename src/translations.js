@@ -45,8 +45,14 @@ t_EN["WAITING_FOR_PLAYERS"] = "waiting for players";
 t_EN["WAITING_FOR_TAKEOFF"] = "waiting for takeoff";
 t_EN["GAME_RUNNING"] = "running";
 t_EN["CANCEL"] = "cancel";
-
-
+t_EN["SETUP"] = "determine first player";
+t_EN["INITIAL_BUILDING"] = "first buildphase";
+t_EN["THROW_DICE"] = "throwing dice";
+t_EN["FORCE_DISCARD"] = "force discard";
+t_EN["MOVE_BANDIT"] = "move bandit";
+t_EN["STEAL_CARD"] = "steal card";
+t_EN["TRADING"] = "trade with bank";
+t_EN["BUILDING"] = "building";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -84,15 +90,23 @@ t_NL["CLEAR_ACTIONS"] = "verwijder acties";
 t_NL["WAITING_FOR_PLAYERS"] = "wachten op spelers";
 t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot spel start";
 t_NL["GAME_RUNNING"] = "spel is gestart";
-t_EN["CANCEL"] = "annuleren";
-
+t_NL["CANCEL"] = "annuleren";
+t_NL["SETUP"] = "Eerste speler bepalen";
+t_NL["INITIAL_BUILDING"] = "Eerste bouwronde";
+t_NL["THROW_DICE"] = "Dobbelsteen gooien";
+t_NL["FORCE_DISCARD"] = "Verplicht kaarten afleggen";
+t_NL["MOVE_BANDIT"] = "Verplaats de bandiet";
+t_EN["STEAL_CARD"] = "Steel een kaart";
+t_NL["TRADING"] = "Ruilen met de bank";
+t_NL["BUILDING"] = "Bouwen";
 
  // lowercase translation
 function t(key) {
+    if (key === undefined) return "";
     var result;
     if (lang == 'NL') { result = t_NL[key];}
     else { result = t_EN[key];}
-    return (result === undefined) ? "" : result;
+    return (result === undefined) ? key : result;
 }
 
 // uppercase translation
