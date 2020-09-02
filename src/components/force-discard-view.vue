@@ -11,7 +11,7 @@
       <h2 class="aforce-discard-view__discards-title"> {{T("DISCARDS")}} </h2>
       <div v-for="resource in me.attributes.resources" :key="resource.id" class="force-discard-view__discards-field">
         <label :for=resource.type> {{T(resource.type)}} </label>
-        <input :id=resource.type type="number" min="0" :max=resource.value value="0" />
+        <input :id=resource.type type="number" min="0" :max=resource.value value="0" v-on:change="addResource($event, resource.type)" />
       </div>
       <p class="aforce-discard-view__discard-hint"> {{T("DISCARD_HINT")}} </p>
     </div>
@@ -28,6 +28,9 @@
     components: {ResourcesList},
     props: ["me", "dev_mode"],
     methods: {
+      addResource: function(event, type) {
+        console.log({type: type, value: event.target.value});
+      },
       sendClientResponse: function() {
         return true;
       }

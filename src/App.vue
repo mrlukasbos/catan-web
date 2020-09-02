@@ -44,7 +44,8 @@
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
-    <force-discard-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
+
+    <force-discard-view v-bind:class="{ 'force-discard-view--visible': (forceDiscardVisible || game_phase == 'FORCE_DISCARD') }"  :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
 
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
@@ -87,6 +88,7 @@ export default {
       dev_mode: true,
       joinModalVisible: false,
       leaveModalVisible: false,
+      forceDiscardVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
       game_status: "",
@@ -122,7 +124,7 @@ export default {
       me: function() {
           let self = this;
           return this.players.find(function(player) {
-            return player.attributes.id === self.player.id;
+            return player.attributes.id == self.player.id;
           })
       },
       ownTurn: function() {
@@ -188,7 +190,8 @@ export default {
     },
 
     handleResponse: function(response) {
-        if (response.code == 1) { // ID ACK
+      this.forceDiscardVisible = false;
+      if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
             localStorage.setItem("name", this.player.name);
             localStorage.setItem("id", this.player.id);
@@ -201,7 +204,7 @@ export default {
         } else if (response.code == 103) { // move bandit request
         
         } else if (response.code == 104) { // discard resources request
-        
+         this.forceDiscardVisible = true;
         }
     },
 
