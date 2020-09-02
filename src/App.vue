@@ -58,7 +58,7 @@
     </div>
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
-    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :my_id="player.id" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
     
@@ -136,7 +136,7 @@ export default {
       me: function() {
           let self = this;
           return this.players.find(function(player) {
-            return player.attributes.id === self.player.id;
+            return player.attributes.id == self.player.id;
           })
       },
       ownTurn: function() {

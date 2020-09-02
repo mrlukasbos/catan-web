@@ -2,6 +2,7 @@
   <div class="players">
     <div v-if="players.length">
       <div v-for="player in players" v-bind:key="player.attributes.id" :style="playerStyle(player)" class="player-card">
+
         <span :style="{ 'color': player.attributes.color }"> {{player.attributes.name}} <small v-if="dev_mode">({{player.attributes.id}}) </small></span>
         <small> {{T ("RESOURCES")}} </small>
         <resources-list :resources="player.attributes.resources"/>
@@ -29,18 +30,29 @@
   import ResourcesList from "./resources-list";
   export default {
     components: {ResourcesList},
-    props: ['players', 'currentPlayerId', 'dev_mode'],
+    props: ['players', 'currentPlayerId', 'dev_mode', 'my_id'],
     data: function () {
       return {
         ip: "localhost",
         port: 10007,
       }
     },
+  
     methods: {
-      playerStyle: function(player) {
-        return {backgroundColor: (player.attributes.id == this.currentPlayerId) ? "black" : "transparent"};
+      playerStyle: function(player) {   
+        let obj = {};
+        if (player.attributes.id == this.currentPlayerId) {
+          obj.backgroundColor = "black";
+        } else {
+          obj.backgroundColor = "transparent";
+        }
+
+        if (player.attributes.id == this.my_id) {
+          obj.borderLeft = "4px solid steelblue";
+        } 
+        return obj;
       }
-    }
+    },
   }
 </script>
 
