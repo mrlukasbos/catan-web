@@ -3,9 +3,17 @@
     <modal :visible="joinModalVisible">
       <h2> Join the game </h2>
       <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-      <button v-on:click="hide_join_modal"> Cancel </button>
-      <button v-on:click="join_game"> Join </button>
+      <button v-on:click="hide_join_modal"> {{T("CANCEL")}} </button>
+      <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
     </modal>
+
+    <modal :visible="leaveModalVisible">
+      <h2> Leave the game </h2>
+      <h3> Are you sure you want to leave the game, {{player.name}}? </h3>
+      <button v-on:click="hide_leave_modal"> {{T("CANCEL")}} </button>
+      <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
+    </modal>
+
 
       <div class="header">
         <span class="title"> Catan </span>
@@ -24,6 +32,7 @@
             <a class="control" v-if="connected" v-on:click="start_game"> {{T("START_GAME")}} </a>
             <a class="control" v-if="connected" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
             <a class="control" v-if="connected" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
+            <a class="control" v-if="connected" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
@@ -71,6 +80,7 @@ export default {
       locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
       dev_mode: true,
       joinModalVisible: false,
+      leaveModalVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
       game_status: "",
@@ -238,6 +248,24 @@ export default {
         console.log("sending this message to CATAN SERVER: " + joinMessage);
         this.socket.send(joinMessage);
         this.hide_join_modal();
+    },
+    leave_game() {
+         let leaveMessage = JSON.stringify({
+            model: "leave",
+            attributes: {
+                name: this.player.name,
+                id: this.player.id,
+            }
+        });
+        console.log("sending this message to CATAN SERVER: " + leaveMessage);
+        this.socket.send(leaveMessage);
+        this.hide_leave_modal();
+    },
+    show_leave_modal() {
+        this.leaveModalVisible = true;
+    },
+    hide_leave_modal() {
+        this.leaveModalVisible = false;
     },
     createAction: function (action, object, resources) {
       this.actions.push({action: action, object: object, resources: resources});
