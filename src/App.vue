@@ -44,7 +44,8 @@
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
     
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
-    
+    <force-discard-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
+
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
@@ -56,6 +57,7 @@ import playersView from './components/players-view.vue'
 import eventsView from './components/events-view.vue'
 import actionView from './components/action-view.vue'
 import modal from './components/modal.vue'
+import forceDiscardView from './components/force-discard-view.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
 
@@ -69,6 +71,7 @@ export default {
     eventsView,
     actionView,
     modal,
+    forceDiscardView
   },
 
   data: function() {
