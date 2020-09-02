@@ -1,0 +1,26 @@
+.resources-list {
+  display: flex;
+
+
+  &--medium &__resource {
+    width: 36px;
+    height: 56px;
+  }
+
+  &--large &__resource {
+    width: 54px;
+    height: 84px;
+  }
+
+  &__resource {
+    font-weight: 100;
+    width: 18px;
+    height: 28px;
+    border-radius: 5%;
+    margin-right: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: .5px solid gainsboro;
+  }
+}
