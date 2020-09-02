@@ -40,9 +40,14 @@
       },
       sendClientResponse: function() {
         let buildRequest = [];
+        let self = this;
 
         this.actions.forEach(function(action) {
-          if (action.action === "buildVillage") {
+          if (action.action === "placeBandit") {
+            self.$emit("clientResponse", [{location: action.object.key}]);
+            self.$emit("clearActions");
+            return;
+          } else if (action.action === "buildVillage") {
             buildRequest.push({ 
               structure: "village", 
               location: action.object.key 
@@ -62,6 +67,7 @@
               structure: "development_card" });
           }
         });
+
       this.$emit("clientResponse", buildRequest);
       this.$emit("clearActions");
     }

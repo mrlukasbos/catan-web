@@ -3,13 +3,24 @@
     <modal :visible="joinModalVisible">
       <h2> Join the game </h2>
       <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-      <button v-on:click="hide_join_modal"> Cancel </button>
-      <button v-on:click="join_game"> Join </button>
+      <button v-on:click="hide_join_modal"> {{T("CANCEL")}} </button>
+      <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
     </modal>
+
+    <modal :visible="leaveModalVisible">
+      <h2> Leave the game </h2>
+      <h3> Are you sure you want to leave the game, {{player.name}}? </h3>
+      <button v-on:click="hide_leave_modal"> {{T("CANCEL")}} </button>
+      <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
+    </modal>
+
 
       <div class="header">
         <span class="title"> Catan </span>
         <div class="controls">
+            <div class="control">
+                {{T(game_status)}}
+            </div>
             <div class="control">
                 {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
             </div>
@@ -21,13 +32,16 @@
             <a class="control" v-if="connected" v-on:click="start_game"> {{T("START_GAME")}} </a>
             <a class="control" v-if="connected" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
             <a class="control" v-if="connected" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
+            <a class="control" v-if="connected" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="lang"/>
+    
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
@@ -64,10 +78,12 @@ export default {
       actions: [],
       lang: "EN",
       locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
-      dev_mode: false,
+      dev_mode: true,
       joinModalVisible: false,
+      leaveModalVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
+      game_status: "",
       player: {
           id: -1,
           name: ""
@@ -77,9 +93,6 @@ export default {
 
   // autoconnect on start
   mounted: function() {
-    console.log("catan dev mode enabled")
-    this.dev_mode = true;
-
     console.log("autoconnecting...")
     this.connect("localhost", 10007);
   },
@@ -125,6 +138,12 @@ export default {
 
       this.socket.onopen = () => {
           this.connected = true;
+
+          if (localStorage.getItem("id") && localStorage.getItem("name")) {
+            this.player.name = localStorage.getItem("name");
+            this.player.id = localStorage.getItem("id");
+            this.join_game();
+          }
       }
 
       this.socket.onmessage = (data) => {
@@ -135,6 +154,7 @@ export default {
             this.board = json.attributes.board.attributes;
             this.players = json.attributes.players;
             this.currentPlayerId = json.attributes.currentPlayer;
+            this.game_status = json.attributes.status;
 
             if (json.attributes.events) {
                 this.events = json.attributes.events.reverse();
@@ -145,7 +165,6 @@ export default {
       }
     },
     sendClientResponse: function(response) {
-
         let msg = {
             model: "client-response",
             attributes: response
@@ -155,14 +174,29 @@ export default {
           this.socket.send(JSON.stringify(msg));
         }
     },
+
     clearActions: function() {
         this.actions = [];
     },
+
     handleResponse: function(response) {
-        if (response.code == 1) {
+        if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
+            localStorage.setItem("name", this.player.name);
+            localStorage.setItem("id", this.player.id);
+        } else if (response.code == 100) { // trade request
+
+        } else if (response.code == 101) { // build request
+
+        } else if (response.code == 102) { // initial build request
+        
+        } else if (response.code == 103) { // move bandit request
+        
+        } else if (response.code == 104) { // discard resources request
+        
         }
     },
+
     kill_socket: function () {
       if (this.socket) {
         this.socket.close();
@@ -208,11 +242,30 @@ export default {
             model: "join",
             attributes: {
                 name: this.player.name,
+                id: this.player.id,
             }
         });
         console.log("sending this message to CATAN SERVER: " + joinMessage);
         this.socket.send(joinMessage);
         this.hide_join_modal();
+    },
+    leave_game() {
+         let leaveMessage = JSON.stringify({
+            model: "leave",
+            attributes: {
+                name: this.player.name,
+                id: this.player.id,
+            }
+        });
+        console.log("sending this message to CATAN SERVER: " + leaveMessage);
+        this.socket.send(leaveMessage);
+        this.hide_leave_modal();
+    },
+    show_leave_modal() {
+        this.leaveModalVisible = true;
+    },
+    hide_leave_modal() {
+        this.leaveModalVisible = false;
     },
     createAction: function (action, object, resources) {
       this.actions.push({action: action, object: object, resources: resources});

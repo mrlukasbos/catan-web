@@ -23,6 +23,7 @@ t_EN["WOOD"] = "wood";
 t_EN["WAITING_FOR_TAKEOFF"] = "waiting for game to start";
 t_EN["JOIN_GAME"] = "join game";
 t_EN["START_GAME"] = "start game";
+t_EN["LEAVE_GAME"] = "leave game";
 t_EN["STOP_GAME"] = "stop game";
 t_EN["CONNECT"] = "connect";
 t_EN["DISCONNECT"] = "disconnect";
@@ -40,6 +41,10 @@ t_EN["RESOURCES"] = "resources";
 t_EN["UNUSED"] = "unused";
 t_EN["BUY_DEVELOPMENT"] = "buy development card";
 t_EN["CLEAR_ACTIONS"] = "clear actions";
+t_EN["WAITING_FOR_PLAYERS"] = "waiting for players";
+t_EN["WAITING_FOR_TAKEOFF"] = "waiting for takeoff";
+t_EN["GAME_RUNNING"] = "running";
+t_EN["CANCEL"] = "cancel";
 
 
 
@@ -58,6 +63,7 @@ t_NL["WOOD"] = "hout";
 t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot het spel start";
 t_NL["JOIN_GAME"] = "neem deel aan spel";
 t_NL["START_GAME"] = "start spel";
+t_NL["LEAVE_GAME"] = "verlaat spel";
 t_NL["STOP_GAME"] = "stop spel";
 t_NL["CONNECT"] = "verbinden";
 t_NL["DISCONNECT"] = "verbreek verbinding";
@@ -75,6 +81,10 @@ t_NL["RESOURCES"] = "grondstoffen";
 t_NL["UNUSED"] = "ongebruikt";
 t_NL["BUY_DEVELOPMENT"] = "koop ontwikkelingskaart";
 t_NL["CLEAR_ACTIONS"] = "verwijder acties";
+t_NL["WAITING_FOR_PLAYERS"] = "wachten op spelers";
+t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot spel start";
+t_NL["GAME_RUNNING"] = "spel is gestart";
+t_EN["CANCEL"] = "annuleren";
 
 
  // lowercase translation
