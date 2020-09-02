@@ -19,6 +19,9 @@
         <span class="title"> Catan </span>
         <div class="controls">
             <div class="control">
+                {{T(game_phase)}}
+            </div>
+            <div class="control">
                 {{T(game_status)}}
             </div>
             <div class="control">
@@ -84,6 +87,7 @@ export default {
       currentPlayerId: 1,
       recentResponse: null,
       game_status: "",
+      game_phase: "",
       player: {
           id: -1,
           name: ""
@@ -155,6 +159,7 @@ export default {
             this.players = json.attributes.players;
             this.currentPlayerId = json.attributes.currentPlayer;
             this.game_status = json.attributes.status;
+            this.game_phase = json.attributes.phase;
 
             if (json.attributes.events) {
                 this.events = json.attributes.events.reverse();
