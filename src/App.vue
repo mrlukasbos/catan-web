@@ -14,13 +14,27 @@
       <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
     </modal>
 
-    <modal :visible="settingsModalVisible">
-      <h2> Settings </h2>
-        {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
-        <select v-model="lang">
-            <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
-        </select>
-        <button v-on:click="hide_settings_modal"> {{T("CANCEL")}} </button>
+    <modal :visible="settingsModalVisible" class="settings-modal">
+        <div class="settings-modal-content">
+            <h1> {{T("SETTINGS")}} </h1>
+            <div class="settings-modal-row">
+                {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
+            </div>
+            <div class="settings-modal-row">
+                {{T("LANGUAGE")}}
+                <select v-model="lang">
+                    <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
+                </select>
+            </div>
+
+            <div class="settings-modal-row">
+                <span> </span>
+                <div>
+                    <button class="secondary" v-on:click="hide_settings_modal"> {{T("CANCEL")}} </button>
+                    <button class="primary" v-on:click="hide_settings_modal"> {{T("APPLY")}} </button>
+                </div>
+            </div>
+        </div>
     </modal>
 
       <div class="header">
@@ -36,9 +50,9 @@
                 {{T("SETTINGS")}}
             </div>    
             <a class="control clickable" v-if="connected && !gameIsRunning" v-on:click="start_game"> {{T("START_GAME")}} </a>
-            <a class="control clickable" v-if="gameIsRunning" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
-            <a class="control clickable" v-if="!currentPlayer" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
-            <a class="control clickable" v-if="currentPlayer" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
+            <a class="control clickable" v-if="connected && gameIsRunning" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
+            <a class="control clickable" v-if="!joined" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
+            <a class="control clickable" v-if="joined" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
@@ -113,7 +127,6 @@ export default {
   },
 
   computed: {
-      // the player who is not
       currentPlayer: function() {
           let self = this;
           return this.players.find(function(player) {
@@ -130,7 +143,13 @@ export default {
         return this.player.id == this.currentPlayerId;
       }, 
       gameIsRunning: function() {
-          return this.game_status === "RUNNING";
+          return this.game_status == "GAME_RUNNING";
+      },
+      joined: function() {
+        let self = this;
+        return this.players.some(function(player) {
+            return player.attributes.id == self.player.id;
+        })
       }
   },
 
@@ -323,6 +342,31 @@ html, body {
     background-color: #000;
 }
 
+.settings-modal {
+    padding-left: 0;
+}
+
+.settings-modal-content {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    max-width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.settings-modal-row {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.settings-modal-row:not(:last-child) {
+    border-bottom: .5px solid #efefef;
+}
+
 .title {
     font-weight: bold;
 }
@@ -355,16 +399,35 @@ button {
     border: none;
     background-color:  rgba(46, 167, 6, 1);
     height:36px;
-    border-radius: 0px;
+    border-radius: 4px;
     color: white;
-    font-weight: 100;
-    padding-right: 12px;
-    padding-left: 12px;
-    margin: 0;
+    font-weight: 600;
+    padding-right: 24px;
+    padding-left: 24px;
+    margin: 0;    
+    cursor: pointer;
 }
 
 button:hover {
     background-color:  rgb(41, 148, 5);
+    transition: background-color .12s;
+}
+
+.primary {
+    background-color:  rgba(46, 167, 6, 1);
+}
+
+.primary:hover {
+    background-color:  rgb(41, 148, 5);
+    transition: background-color .12s;
+}
+
+.secondary {
+    background-color:  rgba(200, 200, 200, 1);
+}
+
+.secondary:hover {
+    background-color:  rgba(150, 150, 150, 1);
     transition: background-color .12s;
 }
 

@@ -54,6 +54,7 @@ t_EN["STEAL_CARD"] = "steal card";
 t_EN["TRADING"] = "trade with bank";
 t_EN["BUILDING"] = "building";
 t_EN["SETTINGS"] = "settings";
+t_EN["LANGUAGE"] = "language";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -101,6 +102,7 @@ t_EN["STEAL_CARD"] = "steel een kaart";
 t_NL["TRADING"] = "ruilen met de bank";
 t_NL["BUILDING"] = "bouwen";
 t_NL["SETTINGS"] = "instellingen";
+t_NL["LANGUAGE"] = "taal";
 
  // lowercase translation
 function t(key) {

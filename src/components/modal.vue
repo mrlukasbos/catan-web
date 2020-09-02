@@ -30,6 +30,7 @@ export default {
     transition: visibility .3s, opacity .3s;
     opacity: 0;
     z-index: 999;
+    justify-content: center;
   }
 
   .modal--visible {
@@ -39,8 +40,7 @@ export default {
 
   .modal__body {
     margin-top: 20%;
-    padding: 30px;
-    padding-left: 330px;
+    padding: 50px;
     background-color: white;
   }
 
