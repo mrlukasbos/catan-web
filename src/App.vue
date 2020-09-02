@@ -14,6 +14,14 @@
       <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
     </modal>
 
+    <modal :visible="settingsModalVisible">
+      <h2> Settings </h2>
+        {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
+        <select v-model="lang">
+            <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
+        </select>
+        <button v-on:click="hide_settings_modal"> {{T("CANCEL")}} </button>
+    </modal>
 
       <div class="header">
         <span class="title"> Catan </span>
@@ -24,18 +32,13 @@
             <div class="control">
                 {{T(game_status)}}
             </div>
-            <div class="control">
-                {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
-            </div>
-            <div class="control">
-            <select v-model="lang">
-                <option v-for="locale in locales" :key="locale.id" :value="locale.id">{{locale.name}}</option>
-            </select>
-            </div>
-            <a class="control" v-if="connected" v-on:click="start_game"> {{T("START_GAME")}} </a>
-            <a class="control" v-if="connected" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
-            <a class="control" v-if="connected" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
-            <a class="control" v-if="connected" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
+             <div v-on:click="show_settings_modal" class="control clickable">
+                {{T("SETTINGS")}}
+            </div>    
+            <a class="control clickable" v-if="connected && !gameIsRunning" v-on:click="start_game"> {{T("START_GAME")}} </a>
+            <a class="control clickable" v-if="gameIsRunning" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
+            <a class="control clickable" v-if="!currentPlayer" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
+            <a class="control clickable" v-if="currentPlayer" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
@@ -84,6 +87,7 @@ export default {
       dev_mode: true,
       joinModalVisible: false,
       leaveModalVisible: false,
+      settingsModalVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
       game_status: "",
@@ -124,6 +128,9 @@ export default {
       },
       ownTurn: function() {
         return this.player.id == this.currentPlayerId;
+      }, 
+      gameIsRunning: function() {
+          return this.game_status === "RUNNING";
       }
   },
 
@@ -233,6 +240,13 @@ export default {
         this.player.color = color.code;
     },
 
+    show_settings_modal: function() {
+        this.settingsModalVisible = true;
+    },
+    hide_settings_modal: function() {
+        this.settingsModalVisible = false;
+    },
+
     show_join_modal: function() {
         this.joinModalVisible = true;
     },
@@ -324,10 +338,12 @@ html, body {
     padding-right: 12px;
     font-weight: 600;
     font-size: small;
-    cursor: pointer;
 }
 
-.control:hover {
+.clickable {
+    cursor: pointer;
+}
+.clickable:hover {
     color: green;
 }
 

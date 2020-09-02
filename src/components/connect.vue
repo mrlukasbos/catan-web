@@ -2,8 +2,8 @@
   <div>
     <input v-if="!connected" placeholder="Ip address" v-model="ip" v-on:keyup.enter="connect"/>
     <input v-if="!connected" placeholder="port" v-model="port" v-on:keyup.enter="connect"/>
-    <a class="control" v-if="connected" v-on:click="disconnect"> {{T("DISCONNECT")}} </a>
-    <a class="control" v-else v-on:click="connect"> {{T("CONNECT")}} </a>
+    <a class="control clickable" v-if="connected" v-on:click="disconnect"> {{T("DISCONNECT")}} </a>
+    <a class="control clickable" v-else v-on:click="connect"> {{T("CONNECT")}} </a>
   </div>
 </template>
 
