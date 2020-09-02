@@ -231,7 +231,7 @@ export default {
     kill_socket: function () {
       if (this.socket) {
         this.socket.close();
-        delete this.socket;
+        delete this.$data.socket;
       }
       this.connected = false;
     },
