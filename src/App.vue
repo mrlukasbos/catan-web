@@ -45,7 +45,7 @@
     
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
 
-    <force-discard-view v-show="true"  :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
+    <force-discard-view v-bind:class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
 
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
@@ -295,7 +295,7 @@ export default {
 html, body {
     margin: 0;
     background-color: #222;
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 #app {
@@ -351,11 +351,23 @@ button {
     padding-right: 12px;
     padding-left: 12px;
     margin: 0;
+    cursor: pointer;
 }
+
 
 button:hover {
     background-color:  rgb(41, 148, 5);
     transition: background-color .12s;
+}
+
+button:disabled {
+    background-color: darkgray;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    background-color: darkgray;
+    cursor: not-allowed;
 }
 
 code {
