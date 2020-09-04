@@ -8,12 +8,17 @@
       <resources-list v-if="me" :resources="me.attributes.resources" size="medium"/>
     </div>
     <div class="force-discard-view__discards">
-      <h2 class="aforce-discard-view__discards-title"> {{T("DISCARDS")}} </h2>
+      <!-- <h2 class="force-discard-view__discards-title"> {{T("DISCARDS")}} </h2> -->
       <div v-for="resource in me.attributes.resources" :key="resource.id" class="force-discard-view__discards-field">
         <label :for=resource.type> {{T(resource.type)}} </label>
-        <input :id=resource.type type="number" min="0" :max=resource.value placeholder="0" v-model="resourcesToDiscard[resource.type]" />
+
+        <div class="force-discard-view__discards-field-counter">
+          <button :disabled="resourcesToDiscard[resource.type] <= 0" v-on:click="decrement(resource.type)"> - </button>
+          <input :id=resource.type type="number" min="0" :max=resourcesToDiscard[resource.type] v-model="resourcesToDiscard[resource.type]" />
+          <button :disabled="resourcesToDiscard[resource.type] >= resource.value" v-on:click="increment(resource.type)"> + </button>
+        </div>
       </div>
-      <p class="aforce-discard-view__discard-hint"> {{T("DISCARD_HINT")}} </p>
+      <!-- <p class="aforce-discard-view__discard-hint"> {{T("DISCARD_HINT")}} </p> -->
     </div>
     <div class="force-discard-view__finish" >
       <button class="force-discard-view__finish-button" v-on:click="sendClientResponse"> {{T("FINISH_DISCARD")}} </button>
@@ -29,24 +34,31 @@
     props: ["me", "dev_mode"],
     data: function() {
       return {
-        resourcesToDiscard: {}
+        resourcesToDiscard: {
+          "WOOL" : 0,
+          "WOOD" : 0,
+          "STONE" : 0,
+          "GRAIN" : 0,
+          "ORE" : 0,
+        }
       }
     },
     methods: {
+      increment(type) {
+        this.resourcesToDiscard[type]++;
+      },
+      decrement(type) {
+        this.resourcesToDiscard[type]--;
+      },
       sendClientResponse: function() {
         let discardMessage = [];
-
         for (let item in this.resourcesToDiscard) {
-          console.log(item);
-
           discardMessage.push({
             "type": item,
             "value": this.resourcesToDiscard[item]
           });
         }
-        console.log(discardMessage);
         this.$emit("clientResponse", discardMessage);
-        return true;
       }
     }
   };
