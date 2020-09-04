@@ -18,6 +18,9 @@
       <div class="header">
         <span class="title"> Catan </span>
         <div class="controls">
+            <div v-if="recentResponse" class="control" :alt="recentResponse.description">
+                {{recentResponse.code}} {{recentResponse.title}}
+            </div>
             <div class="control">
                 {{T(game_phase)}}
             </div>
@@ -190,6 +193,7 @@ export default {
     },
 
     handleResponse: function(response) {
+        this.recentResponse = response;
       this.forceDiscardVisible = false;
       if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
