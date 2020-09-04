@@ -45,7 +45,7 @@
     
     <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
 
-    <force-discard-view v-bind:class="{ 'force-discard-view--visible': (forceDiscardVisible || game_phase == 'FORCE_DISCARD') }"  :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
+    <force-discard-view v-show="true"  :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
 
     <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
