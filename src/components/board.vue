@@ -506,8 +506,8 @@ export default {
     },
 
     hexProjection: function(radius) {
-      let dx = radius * 2 * Math.sin(Math.PI / 3),
-          dy = radius * 1.5;
+      let dx = radius * 2 * Math.sin(Math.PI / 3);
+      let dy = radius * 1.5;
 
       return {
         stream: function (stream) {
@@ -533,12 +533,12 @@ export default {
     },
 
     hexTopology: function(radius, width, height) {
-      let dx = radius * 2 * Math.sin(Math.PI / 3),
-          dy = radius * 1.5,
-          m = Math.ceil((height + radius) / dy) + 1,
-          n = Math.ceil(width / dx) + 1,
-          geometries = [],
-          arcs = [];
+      let dx = radius * 2 * Math.sin(Math.PI / 3);
+      let dy = radius * 1.5;
+      let m = Math.ceil((height + radius) / dy) + 1;
+      let n = Math.ceil(width / dx) + 1;
+      let geometries = [];
+      let arcs = [];
 
       for (let j = -1; j <= m; ++j) {
         for (let i = -1; i <= n; ++i) {
