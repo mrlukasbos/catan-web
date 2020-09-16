@@ -114,27 +114,27 @@ export default {
 
   computed: {
       currentPlayer: function() {
-          let self = this;
-          return this.players.find(function(player) {
-            return player.attributes.id === self.currentPlayerId;
-          })
+        let self = this;
+        return this.players.find(function(player) {
+          return player.attributes.id === self.currentPlayerId;
+        })
       },
       me: function() {
-          let self = this;
-          return this.players.find(function(player) {
-            return player.attributes.id == self.player.id;
-          })
+        let self = this;
+        return this.players.find(function(player) {
+          return player.attributes.id == self.player.id;
+        })
       },
       ownTurn: function() {
         return this.player.id == this.currentPlayerId;
       }, 
       gameIsRunning: function() {
-          return this.game_status == "GAME_RUNNING";
+        return this.game_status == "GAME_RUNNING";
       },
       joined: function() {
         let self = this;
         return this.players.some(function(player) {
-            return player.attributes.id == self.player.id;
+          return player.attributes.id == self.player.id;
         })
       }
   },
@@ -149,17 +149,17 @@ export default {
       }
 
       this.socket.onclose = () => {
-          this.kill_socket();
+        this.kill_socket();
       }
 
       this.socket.onopen = () => {
-          this.connected = true;
+        this.connected = true;
 
-          if (localStorage.getItem("id") && localStorage.getItem("name")) {
-            this.player.name = localStorage.getItem("name");
-            this.player.id = localStorage.getItem("id");
-            this.join_game();
-          }
+        if (localStorage.getItem("id") && localStorage.getItem("name")) {
+          this.player.name = localStorage.getItem("name");
+          this.player.id = localStorage.getItem("id");
+          this.join_game();
+        }
       }
 
       this.socket.onmessage = (data) => {
@@ -167,53 +167,53 @@ export default {
         let json = JSON.parse(message);
 
         if (json.model == "game") {
-            this.board = json.attributes.board.attributes;
-            this.players = json.attributes.players;
-            this.currentPlayerId = json.attributes.currentPlayer;
-            this.game_status = json.attributes.status;
-            this.game_phase = json.attributes.phase;
+          this.board = json.attributes.board.attributes;
+          this.players = json.attributes.players;
+          this.currentPlayerId = json.attributes.currentPlayer;
+          this.game_status = json.attributes.status;
+          this.game_phase = json.attributes.phase;
 
-            if (json.attributes.events) {
-                this.events = json.attributes.events.reverse();
-            }
+          if (json.attributes.events) {
+              this.events = json.attributes.events.reverse();
+          }
         } else if (json.model == "response") {
-            this.handleResponse(json.attributes);
+          this.handleResponse(json.attributes);
         }
       }
     },
     sendClientResponse: function(response) {
-        let msg = {
-            model: "client-response",
-            attributes: response
-        }
+      let msg = {
+        model: "client-response",
+        attributes: response
+      }
 
-        if (this.socket) {
-          this.socket.send(JSON.stringify(msg));
-        }
+      if (this.socket) {
+        this.socket.send(JSON.stringify(msg));
+      }
     },
 
     clearActions: function() {
-        this.actions = [];
+      this.actions = [];
     },
 
     handleResponse: function(response) {
-        this.recentResponse = response;
-        this.forceDiscardVisible = false;
-        if (response.code == 1) { // ID ACK
-            this.player.id = parseInt(response.additional_info);
-            localStorage.setItem("name", this.player.name);
-            localStorage.setItem("id", this.player.id);
-        } else if (response.code == 100) { // trade request
+      this.recentResponse = response;
+      this.forceDiscardVisible = false;
+      if (response.code == 1) { // ID ACK
+        this.player.id = parseInt(response.additional_info);
+        localStorage.setItem("name", this.player.name);
+        localStorage.setItem("id", this.player.id);
+      } else if (response.code == 100) { // trade request
 
-        } else if (response.code == 101) { // build request
+      } else if (response.code == 101) { // build request
 
-        } else if (response.code == 102) { // initial build request
-        
-        } else if (response.code == 103) { // move bandit request
-        
-        } else if (response.code == 104) { // discard resources request
-         this.forceDiscardVisible = true;
-        }
+      } else if (response.code == 102) { // initial build request
+      
+      } else if (response.code == 103) { // move bandit request
+      
+      } else if (response.code == 104) { // discard resources request
+        this.forceDiscardVisible = true;
+      }
     },
 
     kill_socket: function () {
@@ -223,31 +223,35 @@ export default {
       }
       this.connected = false;
     },
+
     start_game: function() {
       if (this.socket) {
           this.socket.send(JSON.stringify({
-              model: 'control',
-              attributes: {
-                  command: 'START'
-              }
+            model: 'control',
+            attributes: {
+                command: 'START'
+            }
           }));
       }
     },
+
     stop_game: function() {
-        if (this.socket) {
-             this.socket.send(JSON.stringify({
-              model: 'control',
-              attributes: {
-                  command: 'STOP'
-              }
-          }));
-        }
+      if (this.socket) {
+          this.socket.send(JSON.stringify({
+          model: 'control',
+          attributes: {
+              command: 'STOP'
+          }
+        }));
+      }
     },
+
     applySettings(newSettings) {
-        this.settings = newSettings;
-        setGlobalLanguage(this.settings.lang);
-        this.$forceUpdate();
+      this.settings = newSettings;
+      setGlobalLanguage(this.settings.lang);
+      this.$forceUpdate();
     },
+
     selectColor: function(evt, color) {
         this.player.color = color.code;
     },
@@ -267,26 +271,27 @@ export default {
         this.socket.send(joinMessage);
         this.joinModalVisible = false;
     },
+
     leave_game() {
-         let leaveMessage = JSON.stringify({
-            model: "leave",
-            attributes: {
-                name: this.player.name,
-                id: this.player.id,
-            }
-        });
-        console.log("sending this message to CATAN SERVER: " + leaveMessage);
-        this.socket.send(leaveMessage);
-        this.leaveModalVisible = false;
+      let leaveMessage = JSON.stringify({
+        model: "leave",
+        attributes: {
+            name: this.player.name,
+            id: this.player.id,
+        }
+      });
+      console.log("sending this message to CATAN SERVER: " + leaveMessage);
+      this.socket.send(leaveMessage);
+      this.leaveModalVisible = false;
     },
     createAction: function (action, object, resources) {
       this.actions.push({action: action, object: object, resources: resources});
     },
     removeAction: function(action) {
-        const index = this.actions.indexOf(action);
-        if (index > -1) {
-            this.actions.splice(index, 1);
-        }
+      const index = this.actions.indexOf(action);
+      if (index > -1) {
+          this.actions.splice(index, 1);
+      }
     }
   }
 }
