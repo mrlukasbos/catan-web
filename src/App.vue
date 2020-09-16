@@ -40,12 +40,12 @@
         </div>
     </div>
 
-    <board :board="board" :players="players" :lang="settings.lang" :dev_mode="settings.dev_mode" v-on:createAction="createAction"/>
-    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="settings.dev_mode"/>
+    <board :board="board" :players="players" :settings="settings" v-on:createAction="createAction"/>
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :settings="settings"/>
     
-    <action-view v-bind:class="{ 'action-view--visible': true }" :me="me" :actions="actions" :dev_mode="settings.dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    <action-view v-bind:class="{ 'action-view--visible': true }" :me="me" :actions="actions" :settings="settings" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
     
-    <events-view :events="events" :players="players" :dev_mode="settings.dev_mode"/>
+    <events-view :events="events" :players="players"/>
   </div>
 </template>
 

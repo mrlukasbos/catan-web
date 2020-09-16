@@ -14,7 +14,7 @@
     <div class="action-view__actions">
       <p class="action-view__actions-hint" v-if="actions.length == 0"> {{T("ACTIONS_HINT")}} </p>
       <div v-for="action in actions" v-bind:key="action.object" class="action-view__action" v-bind:class="action.action">
-        <h4 class="action-view__action-name"> {{action.action}} <small v-if="dev_mode">({{action.object}}) </small></h4>
+        <h4 class="action-view__action-name"> {{action.action}} <small v-if="settings.dev_mode">({{action.object}}) </small></h4>
         <resources-list :resources="action.resources"/>
       </div>
     </div>
@@ -30,7 +30,7 @@
 
   export default {
     components: {ResourcesList},
-    props: ["me", "actions", "dev_mode"],
+    props: ["me", "actions", "settings"],
     methods: {
       buyDevelopmentCard: function () {
         this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: -1},{type: "GRAIN", value: -1},{type: "ORE", value: -1}]);

@@ -2,7 +2,7 @@
   <div class="players">
     <div v-if="players.length">
       <div v-for="player in players" v-bind:key="player.attributes.id" :style="playerStyle(player)" class="player-card">
-        <span :style="{ 'color': player.attributes.color }"> {{player.attributes.name}} <small v-if="dev_mode">({{player.attributes.id}}) </small></span>
+        <span :style="{ 'color': player.attributes.color }"> {{player.attributes.name}} <small v-if="settings.dev_mode">({{player.attributes.id}}) </small></span>
         <small> {{T ("RESOURCES")}} </small>
         <resources-list :resources="player.attributes.resources"/>
         <small>{{T ("DEVELOPMENT_CARDS")}} ({{player.attributes.unused_development_cards}} {{t("UNUSED")}})</small>
@@ -29,7 +29,7 @@
   import ResourcesList from "./resources-list";
   export default {
     components: {ResourcesList},
-    props: ['players', 'currentPlayerId', 'dev_mode'],
+    props: ['players', 'currentPlayerId', 'settings'],
     data: function () {
       return {
         ip: "localhost",

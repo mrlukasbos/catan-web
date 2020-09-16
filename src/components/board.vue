@@ -13,7 +13,7 @@ import {T} from '../translations';
 
 export default {
   name: 'connect',
-  props: ['board', 'players', 'lang', 'dev_mode'],
+  props: ['board', 'players', 'settings'],
 
   data: function() {
       return {
@@ -48,6 +48,12 @@ export default {
       },
       path: function() {
           return d3.geoPath().projection(this.projection);
+      },
+      dev_mode: function() {
+        return this.settings.dev_mode;
+      },
+      lang: function() {
+        return this.settings.lang;
       }
   },
 
