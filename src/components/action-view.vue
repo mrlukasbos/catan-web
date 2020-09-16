@@ -1,26 +1,63 @@
 <template>
   <div class="action-view">
     <div class="action-view__title">
-      <h1 class="action-view__title-text"> {{T("YOUR_TURN")}} </h1>
+      <h1 class="action-view__title-text">
+        {{ T("YOUR_TURN") }}
+      </h1>
     </div>
     <div class="action-view__resources">
-      <h2 class="action-view__resources-title"> {{T("CURRENT_RESOURCES")}} </h2>
-      <resources-list v-if="me" :resources="me.attributes.resources" size="medium"/>
+      <h2 class="action-view__resources-title">
+        {{ T("CURRENT_RESOURCES") }}
+      </h2>
+      <resources-list
+        v-if="me"
+        :resources="me.attributes.resources"
+        size="medium"
+      />
     </div>
     <div class="action-view__buttons">
-      <button class="action-view__trade-button"> {{T("TRADE")}} </button>
-      <button class="action-view__development-button" v-on:click="buyDevelopmentCard"> {{T("BUY_DEVELOPMENT")}} </button>
+      <button class="action-view__trade-button">
+        {{ T("TRADE") }}
+      </button>
+      <button
+        class="action-view__development-button"
+        @click="buyDevelopmentCard"
+      >
+        {{ T("BUY_DEVELOPMENT") }}
+      </button>
     </div>
     <div class="action-view__actions">
-      <p class="action-view__actions-hint" v-if="actions.length == 0"> {{T("ACTIONS_HINT")}} </p>
-      <div v-for="action in actions" v-bind:key="action.object" class="action-view__action" v-bind:class="action.action">
-        <h4 class="action-view__action-name"> {{action.action}} <small v-if="settings.dev_mode">({{action.object}}) </small></h4>
-        <resources-list :resources="action.resources"/>
+      <p
+        v-if="actions.length == 0"
+        class="action-view__actions-hint"
+      >
+        {{ T("ACTIONS_HINT") }}
+      </p>
+      <div
+        v-for="action in actions"
+        :key="action.object"
+        class="action-view__action"
+        :class="action.action"
+      >
+        <h4 class="action-view__action-name">
+          {{ action.action }} <small v-if="settings.dev_mode">({{ action.object }}) </small>
+        </h4>
+        <resources-list :resources="action.resources" />
       </div>
     </div>
-    <div class="action-view__finish" >
-      <button class="action-view__clear-button" v-on:click="clearActions"> {{T("CLEAR_ACTIONS")}} </button>
-      <button class="action-view__finish-button" v-on:click="sendClientResponse"> {{T("FINISH_TURN")}} </button>
+    <div class="action-view__finish">
+      <button
+        class="action-view__clear-button"
+        @click="clearActions"
+      >
+        {{ T("CLEAR_ACTIONS") }}
+      </button>
+      <button
+        class="action-view__finish-button"
+        @click="sendClientResponse"
+      >
+        {{ T("FINISH_TURN") }}
+      </button>
     </div>
   </div>
 </template>

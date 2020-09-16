@@ -31,10 +31,12 @@
   "eslintConfig": {
     "root": true,
     "env": {
-      "node": true
+      "node": true,
+      "es6": true
     },
     "extends": [
       "plugin:vue/essential",
+      "plugin:vue/recommended",
       "eslint:recommended"
     ],
     "parserOptions": {

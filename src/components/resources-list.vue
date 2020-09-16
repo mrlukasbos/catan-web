@@ -1,6 +1,16 @@
 <template>
-  <div class="resources-list" v-bind:class="sizeClass">
-    <div v-for="resource in resources" :key="resource.id" class="resources-list__resource" v-bind:class="resource.type"> {{resource.value}} </div>
+  <div
+    class="resources-list"
+    :class="sizeClass"
+  >
+    <div
+      v-for="resource in resources"
+      :key="resource.id"
+      class="resources-list__resource"
+      :class="resource.type"
+    >
+      {{ resource.value }}
+    </div>
   </div>
 </template>
 

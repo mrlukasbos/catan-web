@@ -1,8 +1,15 @@
 <template>
   <div class="board">
-    <div id="d3-board-holder"></div>
-    <div id="d3-game-holder"></div>
-    <div v-show="hint" class="hint"> <div class="hint-text"> {{hint}}</div></div>
+    <div id="d3-board-holder" />
+    <div id="d3-game-holder" />
+    <div
+      v-show="hint"
+      class="hint"
+    >
+      <div class="hint-text">
+        {{ hint }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -20,7 +27,7 @@ const Structure = {
 }
 
 export default {
-  name: 'connect',
+  name: 'Connect',
   props: ['board', 'players', 'settings', 'actions'],
 
   data: function() {
@@ -63,11 +70,6 @@ export default {
       lang: function() {
         return this.settings.lang;
       }
-  },
-
-  mounted: function() {
-    this.svg_game = d3.select("#d3-game-holder").append("svg").attr("width", this.width).attr("height", this.height);
-    this.svg_board = d3.select("#d3-board-holder").append("svg").attr("width", this.width).attr("height", this.height);
   },
 
   watch: {
@@ -124,6 +126,11 @@ export default {
       this.updateLabels();
       this.updateNumbers();
     }
+  },
+
+  mounted: function() {
+    this.svg_game = d3.select("#d3-game-holder").append("svg").attr("width", this.width).attr("height", this.height);
+    this.svg_board = d3.select("#d3-board-holder").append("svg").attr("width", this.width).attr("height", this.height);
   },
 
   methods: {    

@@ -1,53 +1,77 @@
 <template>
   <transition name="fade">
-  <div v-show="events.length" class="events">
-    <div v-for="event in formattedEvents" :key="event.id" class="event">
-      <span v-if="event.attributes.player_full" :style="{ 'color': event.attributes.player_full.attributes.color }">
-        {{event.attributes.player_full.attributes.name}}
-      </span>
-
-      <span v-if="event.attributes.event_type=='GENERAL'">
-        {{event.attributes.message}}
-      </span>
-
-      <span v-if="event.attributes.event_type == 'BUILD'">
-        <span v-if="event.attributes.structures.length">
-          builds
-          <span v-for="structure in event.attributes.structures" :key="structure.id"> {{structure}} </span>
+    <div
+      v-show="events.length"
+      class="events"
+    >
+      <div
+        v-for="event in formattedEvents"
+        :key="event.id"
+        class="event"
+      >
+        <span
+          v-if="event.attributes.player_full"
+          :style="{ 'color': event.attributes.player_full.attributes.color }"
+        >
+          {{ event.attributes.player_full.attributes.name }}
         </span>
-        <span v-else>
-          builds nothing
-        </span>
-      </span>
-      <span v-else-if="event.attributes.event_type == 'GET_RESOURCES'">
-        <span v-if="event.attributes.resources.length">
-          receives
-          <span v-for="resource in event.attributes.resources" :key="resource.id">
-            <span class="resource-txt" v-bind:class="resource.type"> {{resource.value}} {{resource.type}} </span>
 
+        <span v-if="event.attributes.event_type=='GENERAL'">
+          {{ event.attributes.message }}
+        </span>
+
+        <span v-if="event.attributes.event_type == 'BUILD'">
+          <span v-if="event.attributes.structures.length">
+            builds
+            <span
+              v-for="structure in event.attributes.structures"
+              :key="structure.id"
+            > {{ structure }} </span>
+          </span>
+          <span v-else>
+            builds nothing
           </span>
         </span>
-        <span v-else>
-          receives nothing
-        </span>
-      </span>
+        <span v-else-if="event.attributes.event_type == 'GET_RESOURCES'">
+          <span v-if="event.attributes.resources.length">
+            receives
+            <span
+              v-for="resource in event.attributes.resources"
+              :key="resource.id"
+            >
+              <span
+                class="resource-txt"
+                :class="resource.type"
+              > {{ resource.value }} {{ resource.type }} </span>
 
-      <span v-else-if="event.attributes.event_type == 'TRADE'">
-        <span v-if="event.attributes.resources.length">
-          trades
-          <span v-for="resource in event.attributes.resources" :key="resource.id">
-            <span class="resource-txt" v-bind:class="resource.type"> {{resource.value}} {{resource.type}} </span>
-
+            </span>
+          </span>
+          <span v-else>
+            receives nothing
           </span>
         </span>
-        <span v-else>
-          receives nothing
-        </span>
-      </span>
 
+        <span v-else-if="event.attributes.event_type == 'TRADE'">
+          <span v-if="event.attributes.resources.length">
+            trades
+            <span
+              v-for="resource in event.attributes.resources"
+              :key="resource.id"
+            >
+              <span
+                class="resource-txt"
+                :class="resource.type"
+              > {{ resource.value }} {{ resource.type }} </span>
+
+            </span>
+          </span>
+          <span v-else>
+            receives nothing
+          </span>
+        </span>
+      </div>
     </div>
-  </div>
-    </transition>
+  </transition>
 </template>
 
 <script>
