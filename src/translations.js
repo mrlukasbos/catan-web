@@ -113,23 +113,23 @@ t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
 
- // lowercase translation
+// lowercase translation
 function t(key) {
-    if (key === undefined) return "";
-    var result;
-    if (lang == 'NL') { result = t_NL[key];}
-    else { result = t_EN[key];}
-    return (result === undefined) ? key : result;
+  if (key === undefined) return "";
+  var result;
+  if (lang == 'NL') { result = t_NL[key];}
+  else { result = t_EN[key];}
+  return (result === undefined) ? key : result;
 }
 
 // uppercase translation
 function T(key) {
-    var str = t(key);
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  var str = t(key);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function setGlobalLanguage(new_lang) {
-    lang = new_lang;
+  lang = new_lang;
 }
 
 export {t, T, setGlobalLanguage}
