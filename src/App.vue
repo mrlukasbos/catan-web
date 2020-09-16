@@ -194,8 +194,8 @@ export default {
 
     handleResponse: function(response) {
         this.recentResponse = response;
-      this.forceDiscardVisible = false;
-      if (response.code == 1) { // ID ACK
+        this.forceDiscardVisible = false;
+        if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
             localStorage.setItem("name", this.player.name);
             localStorage.setItem("id", this.player.id);
