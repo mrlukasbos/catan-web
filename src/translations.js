@@ -20,6 +20,7 @@ t_EN["WOOL"] = "wool";
 t_EN["ORE"] = "ore";
 t_EN["GRAIN"] = "grain";
 t_EN["WOOD"] = "wood";
+t_EN["DESERT"] = "desert";
 t_EN["WAITING_FOR_TAKEOFF"] = "waiting for game to start";
 t_EN["JOIN_GAME"] = "join game";
 t_EN["START_GAME"] = "start game";
@@ -55,6 +56,9 @@ t_EN["TRADING"] = "trade with bank";
 t_EN["BUILDING"] = "building";
 t_EN["YOUR_FORCE_DISCARD"] = "discarding";
 t_EN["FINISH_DISCARD"] = "confirm discard";
+t_EN["SETTINGS"] = "settings";
+t_EN["LANGUAGE"] = "language";
+
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -68,6 +72,7 @@ t_NL["WOOL"] = "wol";
 t_NL["ORE"] = "erts";
 t_NL["GRAIN"] = "graan";
 t_NL["WOOD"] = "hout";
+t_NL["DESERT"] = "woestijn";
 t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot het spel start";
 t_NL["JOIN_GAME"] = "neem deel aan spel";
 t_NL["START_GAME"] = "start spel";
@@ -103,6 +108,8 @@ t_NL["TRADING"] = "Ruilen met de bank";
 t_NL["BUILDING"] = "Bouwen";
 t_NL["YOUR_FORCE_DISCARD"] = "kaarten afleggen";
 t_NL["FINISH_DISCARD"] = "kaarten afleggen";
+t_NL["SETTINGS"] = "instellingen";
+t_NL["LANGUAGE"] = "taal";
 
  // lowercase translation
 function t(key) {
