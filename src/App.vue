@@ -1,20 +1,20 @@
 <template>
   <div id="app">
-    <modal :visible="joinModalVisible">
+    <modal :visible="joinModalVisible" v-on:close="joinModalVisible = false">
       <h2> Join the game </h2>
       <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-      <button v-on:click="hide_join_modal"> {{T("CANCEL")}} </button>
+      <button v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
       <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
     </modal>
 
-    <modal :visible="leaveModalVisible">
+    <modal :visible="leaveModalVisible" v-on:close="leaveModalVisible = false">
       <h2> Leave the game </h2>
       <h3> Are you sure you want to leave the game, {{player.name}}? </h3>
-      <button v-on:click="hide_leave_modal"> {{T("CANCEL")}} </button>
+      <button v-on:click="leaveModalVisible = false"> {{T("CANCEL")}} </button>
       <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
     </modal>
 
-    <modal :visible="settingsModalVisible" class="settings-modal">
+    <modal :visible="settingsModalVisible" v-on:close="settingsModalVisible = false" class="settings-modal">
         <div class="settings-modal-content">
             <h1> {{T("SETTINGS")}} </h1>
             <div class="settings-modal-row">
@@ -30,8 +30,8 @@
             <div class="settings-modal-row">
                 <span> </span>
                 <div>
-                    <button class="secondary" v-on:click="hide_settings_modal"> {{T("CANCEL")}} </button>
-                    <button class="primary" v-on:click="hide_settings_modal"> {{T("APPLY")}} </button>
+                    <button class="secondary" v-on:click="settingsModalVisible = false"> {{T("CANCEL")}} </button>
+                    <button class="primary" v-on:click="settingsModalVisible = false"> {{T("APPLY")}} </button>
                 </div>
             </div>
         </div>
@@ -46,13 +46,13 @@
             <div class="control">
                 {{T(game_status)}}
             </div>
-             <div v-on:click="show_settings_modal" class="control clickable">
+             <div v-on:click="settingsModalVisible = true" class="control clickable">
                 {{T("SETTINGS")}}
             </div>    
             <a class="control clickable" v-if="connected && !gameIsRunning" v-on:click="start_game"> {{T("START_GAME")}} </a>
             <a class="control clickable" v-if="connected && gameIsRunning" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
-            <a class="control clickable" v-if="!joined" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
-            <a class="control clickable" v-if="joined" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
+            <a class="control clickable" v-if="!joined" v-on:click="joinModalVisible = true"> {{T("JOIN_GAME")}} </a>
+            <a class="control clickable" v-if="joined" v-on:click="leaveModalVisible = true"> {{T("LEAVE_GAME")}} </a>
             <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="lang"/>
         </div>
     </div>
@@ -259,19 +259,6 @@ export default {
         this.player.color = color.code;
     },
 
-    show_settings_modal: function() {
-        this.settingsModalVisible = true;
-    },
-    hide_settings_modal: function() {
-        this.settingsModalVisible = false;
-    },
-
-    show_join_modal: function() {
-        this.joinModalVisible = true;
-    },
-    hide_join_modal: function() {
-        this.joinModalVisible = false;
-    },
     join_game: function() {
         console.log("registering new player: " + this.player.name);
         console.log(this.player);
@@ -285,7 +272,7 @@ export default {
         });
         console.log("sending this message to CATAN SERVER: " + joinMessage);
         this.socket.send(joinMessage);
-        this.hide_join_modal();
+        this.joinModalVisible = false;
     },
     leave_game() {
          let leaveMessage = JSON.stringify({
@@ -297,12 +284,6 @@ export default {
         });
         console.log("sending this message to CATAN SERVER: " + leaveMessage);
         this.socket.send(leaveMessage);
-        this.hide_leave_modal();
-    },
-    show_leave_modal() {
-        this.leaveModalVisible = true;
-    },
-    hide_leave_modal() {
         this.leaveModalVisible = false;
     },
     createAction: function (action, object, resources) {

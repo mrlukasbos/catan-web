@@ -1,5 +1,5 @@
 <template>
-  <div class="modal" v-bind:class="visibleClass">
+  <div class="modal" v-bind:class="visibleClass" v-on:click.self="close">
     <div class="modal__body">
       <slot></slot>
     </div>
@@ -15,6 +15,11 @@ export default {
         return 'modal--visible';
       }
       return '';
+    }
+  },
+  methods: {
+    close() {
+      this.$emit("close")
     }
   }
 }
