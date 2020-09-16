@@ -113,7 +113,7 @@ t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
 
- // lowercase translation
+// lowercase translation
 function t(key) {
   if (key === undefined) return "";
   var result;

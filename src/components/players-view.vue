@@ -39,22 +39,22 @@
 </template>
 
 <script>
-  import ResourcesList from "./resources-list";
-  export default {
-    components: {ResourcesList},
-    props: ['players', 'currentPlayerId', 'settings'],
-    data: function () {
-      return {
-        ip: "localhost",
-        port: 10007,
-      }
-    },
-    methods: {
-      playerStyle: function(player) {
-        return {backgroundColor: (player.attributes.id == this.currentPlayerId) ? "black" : "transparent"};
-      }
+import ResourcesList from "./resources-list";
+export default {
+  components: {ResourcesList},
+  props: ['players', 'currentPlayerId', 'settings'],
+  data: function () {
+    return {
+      ip: "localhost",
+      port: 10007,
+    }
+  },
+  methods: {
+    playerStyle: function(player) {
+      return {backgroundColor: (player.attributes.id == this.currentPlayerId) ? "black" : "transparent"};
     }
   }
+}
 </script>
 
 <style scoped>

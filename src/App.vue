@@ -173,8 +173,8 @@ export default {
   data: function() {
     return {
       settings: {
-          lang: "EN",
-          dev_mode: true,
+        lang: "EN",
+        dev_mode: true,
       },
       connected: false,
       socket: null,
@@ -191,37 +191,37 @@ export default {
       game_status: "",
       game_phase: "",
       player: {
-          id: -1,
-          name: ""
+        id: -1,
+        name: ""
       }
     }
   },
 
   computed: {
-      currentPlayer: function() {
-        let self = this;
-        return this.players.find(function(player) {
-          return player.attributes.id === self.currentPlayerId;
-        })
-      },
-      me: function() {
-        let self = this;
-        return this.players.find(function(player) {
-          return player.attributes.id == self.player.id;
-        })
-      },
-      ownTurn: function() {
-        return this.player.id == this.currentPlayerId;
-      }, 
-      gameIsRunning: function() {
-        return this.game_status == "GAME_RUNNING";
-      },
-      joined: function() {
-        let self = this;
-        return this.players.some(function(player) {
-          return player.attributes.id == self.player.id;
-        })
-      }
+    currentPlayer: function() {
+      let self = this;
+      return this.players.find(function(player) {
+        return player.attributes.id === self.currentPlayerId;
+      })
+    },
+    me: function() {
+      let self = this;
+      return this.players.find(function(player) {
+        return player.attributes.id == self.player.id;
+      })
+    },
+    ownTurn: function() {
+      return this.player.id == this.currentPlayerId;
+    }, 
+    gameIsRunning: function() {
+      return this.game_status == "GAME_RUNNING";
+    },
+    joined: function() {
+      let self = this;
+      return this.players.some(function(player) {
+        return player.attributes.id == self.player.id;
+      })
+    }
   },
 
   // autoconnect on start
@@ -265,7 +265,7 @@ export default {
           this.game_phase = json.attributes.phase;
 
           if (json.attributes.events) {
-              this.events = json.attributes.events.reverse();
+            this.events = json.attributes.events.reverse();
           }
         } else if (json.model == "response") {
           this.handleResponse(json.attributes);
@@ -317,21 +317,21 @@ export default {
 
     start_game: function() {
       if (this.socket) {
-          this.socket.send(JSON.stringify({
-            model: 'control',
-            attributes: {
-                command: 'START'
-            }
-          }));
+        this.socket.send(JSON.stringify({
+          model: 'control',
+          attributes: {
+            command: 'START'
+          }
+        }));
       }
     },
 
     stop_game: function() {
       if (this.socket) {
-          this.socket.send(JSON.stringify({
+        this.socket.send(JSON.stringify({
           model: 'control',
           attributes: {
-              command: 'STOP'
+            command: 'STOP'
           }
         }));
       }
@@ -344,31 +344,31 @@ export default {
     },
 
     selectColor: function(evt, color) {
-        this.player.color = color.code;
+      this.player.color = color.code;
     },
 
     join_game: function() {
-        console.log("registering new player: " + this.player.name);
-        console.log(this.player);
+      console.log("registering new player: " + this.player.name);
+      console.log(this.player);
 
-        let joinMessage = JSON.stringify({
-            model: "join",
-            attributes: {
-                name: this.player.name,
-                id: this.player.id,
-            }
-        });
-        console.log("sending this message to CATAN SERVER: " + joinMessage);
-        this.socket.send(joinMessage);
-        this.joinModalVisible = false;
+      let joinMessage = JSON.stringify({
+        model: "join",
+        attributes: {
+          name: this.player.name,
+          id: this.player.id,
+        }
+      });
+      console.log("sending this message to CATAN SERVER: " + joinMessage);
+      this.socket.send(joinMessage);
+      this.joinModalVisible = false;
     },
 
     leave_game() {
       let leaveMessage = JSON.stringify({
         model: "leave",
         attributes: {
-            name: this.player.name,
-            id: this.player.id,
+          name: this.player.name,
+          id: this.player.id,
         }
       });
       console.log("sending this message to CATAN SERVER: " + leaveMessage);
@@ -381,7 +381,7 @@ export default {
     removeAction: function(action) {
       const index = this.actions.indexOf(action);
       if (index > -1) {
-          this.actions.splice(index, 1);
+        this.actions.splice(index, 1);
       }
     }
   }

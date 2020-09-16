@@ -15,16 +15,16 @@
 </template>
 
 <script>
-  export default {
-    props: ['resources', 'size'],
-    computed: {
-      sizeClass: function () {
-        if (this.size == null) {
-          return 'resources-list--small'
-        } else {
-          return `resources-list--${this.size}`
-        }
+export default {
+  props: ['resources', 'size'],
+  computed: {
+    sizeClass: function () {
+      if (this.size == null) {
+        return 'resources-list--small'
+      } else {
+        return `resources-list--${this.size}`
       }
     }
   }
+}
 </script>

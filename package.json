@@ -36,13 +36,21 @@
     },
     "extends": [
       "plugin:vue/essential",
+      "plugin:vue/base",
       "plugin:vue/recommended",
+      "plugin:vue/strongly-recommended",
       "eslint:recommended"
+    ],
+    "plugins": [
+      "vue"
     ],
     "parserOptions": {
       "parser": "babel-eslint"
     },
-    "rules": {}
+    "rules": {
+      "indent": ["error", 2],
+      "vue/script-indent": ["error", 2, { "baseIndent": 0}]
+    }
   },
   "browserslist": [
     "> 1%",

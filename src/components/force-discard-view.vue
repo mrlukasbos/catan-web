@@ -64,54 +64,54 @@
 </template>
 
 <script>
-  import ResourcesList from "./resources-list";
+import ResourcesList from "./resources-list";
 
-  export default {
-    components: {ResourcesList},
-    props: ["me", "dev_mode"],
-    data: function() {
-      return {
-        resourcesToDiscard: {
-          "WOOL" : 0,
-          "WOOD" : 0,
-          "STONE" : 0,
-          "GRAIN" : 0,
-          "ORE" : 0,
-        }
-      }
-    },
-    computed: {
-      amountToDiscard: function() {
-        let amountToDiscard = 0;
-        for (let item in this.resourcesToDiscard) {
-          amountToDiscard += this.resourcesToDiscard[item];
-        }
-
-        let totalResources = 0;
-        for (let item of this.me.attributes.resources) {
-          totalResources += item.value;
-        }
-
-        return (Math.floor(totalResources/2)) - amountToDiscard;
-      }
-    },
-    methods: {
-      increment(type) {
-        this.resourcesToDiscard[type]++;
-      },
-      decrement(type) {
-        this.resourcesToDiscard[type]--;
-      },
-      sendClientResponse: function() {
-        let discardMessage = [];
-        for (let item in this.resourcesToDiscard) {
-          discardMessage.push({
-            "type": item,
-            "value": this.resourcesToDiscard[item]
-          });
-        }
-        this.$emit("clientResponse", discardMessage);
+export default {
+  components: {ResourcesList},
+  props: ["me", "dev_mode"],
+  data: function() {
+    return {
+      resourcesToDiscard: {
+        "WOOL" : 0,
+        "WOOD" : 0,
+        "STONE" : 0,
+        "GRAIN" : 0,
+        "ORE" : 0,
       }
     }
-  };
+  },
+  computed: {
+    amountToDiscard: function() {
+      let amountToDiscard = 0;
+      for (let item in this.resourcesToDiscard) {
+        amountToDiscard += this.resourcesToDiscard[item];
+      }
+
+      let totalResources = 0;
+      for (let item of this.me.attributes.resources) {
+        totalResources += item.value;
+      }
+
+      return (Math.floor(totalResources/2)) - amountToDiscard;
+    }
+  },
+  methods: {
+    increment(type) {
+      this.resourcesToDiscard[type]++;
+    },
+    decrement(type) {
+      this.resourcesToDiscard[type]--;
+    },
+    sendClientResponse: function() {
+      let discardMessage = [];
+      for (let item in this.resourcesToDiscard) {
+        discardMessage.push({
+          "type": item,
+          "value": this.resourcesToDiscard[item]
+        });
+      }
+      this.$emit("clientResponse", discardMessage);
+    }
+  }
+};
 </script>

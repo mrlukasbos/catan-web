@@ -63,47 +63,47 @@
 </template>
 
 <script>
-  import ResourcesList from "./resources-list";
+import ResourcesList from "./resources-list";
 
-  export default {
-    components: {ResourcesList},
-    props: ["me", "actions", "settings"],
-    methods: {
-      buyDevelopmentCard: function () {
-        this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: -1},{type: "GRAIN", value: -1},{type: "ORE", value: -1}]);
-      },
-      clearActions: function() {
-        this.$emit("clearActions");
-      },
-      sendClientResponse: function() {
-        let buildRequest = [];
-        let self = this;
+export default {
+  components: {ResourcesList},
+  props: ["me", "actions", "settings"],
+  methods: {
+    buyDevelopmentCard: function () {
+      this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: -1},{type: "GRAIN", value: -1},{type: "ORE", value: -1}]);
+    },
+    clearActions: function() {
+      this.$emit("clearActions");
+    },
+    sendClientResponse: function() {
+      let buildRequest = [];
+      let self = this;
 
-        this.actions.forEach(function(action) {
-          if (action.action === "placeBandit") {
-            self.$emit("clientResponse", [{location: action.object.key}]);
-            self.$emit("clearActions");
-            return;
-          } else if (action.action === "buildVillage") {
-            buildRequest.push({ 
-              structure: "village", 
-              location: action.object.key 
-            });
-          } else if (action.action === "buildCity") {
-              buildRequest.push({ 
-              structure: "city", 
-              location: action.object.key 
-            });
-          } else if (action.action === "buildRoad") {
-              buildRequest.push({ 
-              structure: "street", 
-              location: action.object.key 
-            });
-          } else if (action.action === "buyDevelopmentCard") {
-              buildRequest.push({ 
-              structure: "development_card" });
-          }
-        });
+      this.actions.forEach(function(action) {
+        if (action.action === "placeBandit") {
+          self.$emit("clientResponse", [{location: action.object.key}]);
+          self.$emit("clearActions");
+          return;
+        } else if (action.action === "buildVillage") {
+          buildRequest.push({ 
+            structure: "village", 
+            location: action.object.key 
+          });
+        } else if (action.action === "buildCity") {
+          buildRequest.push({ 
+            structure: "city", 
+            location: action.object.key 
+          });
+        } else if (action.action === "buildRoad") {
+          buildRequest.push({ 
+            structure: "street", 
+            location: action.object.key 
+          });
+        } else if (action.action === "buyDevelopmentCard") {
+          buildRequest.push({ 
+            structure: "development_card" });
+        }
+      });
 
       this.$emit("clientResponse", buildRequest);
       this.$emit("clearActions");

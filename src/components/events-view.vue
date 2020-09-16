@@ -75,22 +75,22 @@
 </template>
 
 <script>
-  export default {
-    props: ['players', 'events'],
-    computed: {
-      formattedEvents: function () {
-        var self = this;
-        return this.events.map(function (evt) {
-          var player_id = evt.attributes.player;
-          var complete_player = self.players.filter(function (player) {
-            return player.attributes.id == player_id;
-          })[0];
-          evt.attributes.player_full = complete_player;
-          return evt;
-        });
-      }
+export default {
+  props: ['players', 'events'],
+  computed: {
+    formattedEvents: function () {
+      var self = this;
+      return this.events.map(function (evt) {
+        var player_id = evt.attributes.player;
+        var complete_player = self.players.filter(function (player) {
+          return player.attributes.id == player_id;
+        })[0];
+        evt.attributes.player_full = complete_player;
+        return evt;
+      });
     }
   }
+}
 </script>
 
 <style scoped>

@@ -52,30 +52,30 @@ import modal from './modal.vue'
 import _ from 'lodash'
 
 export default {
-    components: {
-        ToggleButton,
-    },
-    extends: modal,
-    props: ['settings'],
-    data: function() {
-        return {
-            newSettings: null,
-            locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
-        }
-    },
-    beforeMount: function() {
-        if (this.settings) {
-            this.newSettings = _.cloneDeep(this.settings);
-        }
-    },
-    methods: {
-        apply() {
-            this.$emit("settingsChanged", this.newSettings);
-            this.close();
-        },
-        close() {
-            this.$emit("close")
-        }
+  components: {
+    ToggleButton,
+  },
+  extends: modal,
+  props: ['settings'],
+  data: function() {
+    return {
+      newSettings: null,
+      locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
     }
+  },
+  beforeMount: function() {
+    if (this.settings) {
+      this.newSettings = _.cloneDeep(this.settings);
+    }
+  },
+  methods: {
+    apply() {
+      this.$emit("settingsChanged", this.newSettings);
+      this.close();
+    },
+    close() {
+      this.$emit("close")
+    }
+  }
 }
 </script>
