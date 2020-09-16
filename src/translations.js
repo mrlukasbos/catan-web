@@ -54,8 +54,11 @@ t_EN["MOVE_BANDIT"] = "move bandit";
 t_EN["STEAL_CARD"] = "steal card";
 t_EN["TRADING"] = "trade with bank";
 t_EN["BUILDING"] = "building";
+t_EN["YOUR_FORCE_DISCARD"] = "discarding";
+t_EN["FINISH_DISCARD"] = "confirm discard";
 t_EN["SETTINGS"] = "settings";
 t_EN["LANGUAGE"] = "language";
+
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -95,14 +98,16 @@ t_NL["WAITING_FOR_PLAYERS"] = "wachten op spelers";
 t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot spel start";
 t_NL["GAME_RUNNING"] = "spel is gestart";
 t_NL["CANCEL"] = "annuleren";
-t_NL["SETUP"] = "eerste speler bepalen";
-t_NL["INITIAL_BUILDING"] = "eerste bouwronde";
-t_NL["THROW_DICE"] = "dobbelsteen gooien";
-t_NL["FORCE_DISCARD"] = "verplicht kaarten afleggen";
-t_NL["MOVE_BANDIT"] = "verplaats de bandiet";
-t_EN["STEAL_CARD"] = "steel een kaart";
-t_NL["TRADING"] = "ruilen met de bank";
-t_NL["BUILDING"] = "bouwen";
+t_NL["SETUP"] = "Eerste speler bepalen";
+t_NL["INITIAL_BUILDING"] = "Eerste bouwronde";
+t_NL["THROW_DICE"] = "Dobbelsteen gooien";
+t_NL["FORCE_DISCARD"] = "Verplicht kaarten afleggen";
+t_NL["MOVE_BANDIT"] = "Verplaats de bandiet";
+t_EN["STEAL_CARD"] = "Steel een kaart";
+t_NL["TRADING"] = "Ruilen met de bank";
+t_NL["BUILDING"] = "Bouwen";
+t_NL["YOUR_FORCE_DISCARD"] = "kaarten afleggen";
+t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
 

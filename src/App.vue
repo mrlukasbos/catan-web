@@ -40,6 +40,9 @@
       <div class="header">
         <span class="title"> Catan </span>
         <div class="controls">
+            <div v-if="recentResponse" class="control" :alt="recentResponse.description">
+                {{recentResponse.code}} {{recentResponse.title}}
+            </div>
             <div class="control">
                 {{T(game_phase)}}
             </div>
@@ -60,9 +63,11 @@
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode"/>
     
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
-    
-    <events-view :events="events" :players="players" :dev_mode="dev_mode"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+
+    <force-discard-view v-bind:class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
+
+    <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
   </div>
 </template>
 
@@ -73,6 +78,7 @@ import playersView from './components/players-view.vue'
 import eventsView from './components/events-view.vue'
 import actionView from './components/action-view.vue'
 import modal from './components/modal.vue'
+import forceDiscardView from './components/force-discard-view.vue'
 import {setGlobalLanguage} from './translations'
 import { ToggleButton } from 'vue-js-toggle-button'
 
@@ -86,6 +92,7 @@ export default {
     eventsView,
     actionView,
     modal,
+    forceDiscardView
   },
 
   data: function() {
@@ -101,6 +108,7 @@ export default {
       dev_mode: true,
       joinModalVisible: false,
       leaveModalVisible: false,
+      forceDiscardVisible: false,
       settingsModalVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
@@ -136,7 +144,7 @@ export default {
       me: function() {
           let self = this;
           return this.players.find(function(player) {
-            return player.attributes.id === self.player.id;
+            return player.attributes.id == self.player.id;
           })
       },
       ownTurn: function() {
@@ -211,6 +219,8 @@ export default {
     },
 
     handleResponse: function(response) {
+        this.recentResponse = response;
+        this.forceDiscardVisible = false;
         if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
             localStorage.setItem("name", this.player.name);
@@ -224,7 +234,7 @@ export default {
         } else if (response.code == 103) { // move bandit request
         
         } else if (response.code == 104) { // discard resources request
-        
+         this.forceDiscardVisible = true;
         }
     },
 
@@ -322,7 +332,7 @@ export default {
 html, body {
     margin: 0;
     background-color: #222;
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 #app {
@@ -401,34 +411,26 @@ button {
     height:36px;
     border-radius: 4px;
     color: white;
-    font-weight: 600;
-    padding-right: 24px;
-    padding-left: 24px;
-    margin: 0;    
+    font-weight: 100;
+    padding-right: 12px;
+    padding-left: 12px;
+    margin: 0;
     cursor: pointer;
 }
+
 
 button:hover {
     background-color:  rgb(41, 148, 5);
     transition: background-color .12s;
 }
 
-.primary {
-    background-color:  rgba(46, 167, 6, 1);
+button:disabled {
+    background-color: darkgray;
+    cursor: not-allowed;
 }
 
-.primary:hover {
-    background-color:  rgb(41, 148, 5);
-    transition: background-color .12s;
-}
-
-.secondary {
-    background-color:  rgba(200, 200, 200, 1);
-}
-
-.secondary:hover {
-    background-color:  rgba(150, 150, 150, 1);
-    transition: background-color .12s;
+button:disabled:hover {
+    background-color: darkgray;
 }
 
 code {
