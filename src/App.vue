@@ -23,6 +23,9 @@
     <div class="header">
         <span class="title"> Catan </span>
         <div class="controls">
+            <div v-if="recentResponse" class="control" :alt="recentResponse.description">
+                {{recentResponse.code}} {{recentResponse.title}}
+            </div>
             <div class="control">
                 {{T(game_phase)}}
             </div>
@@ -45,7 +48,10 @@
     
     <action-view v-bind:class="{ 'action-view--visible': true }" :me="me" :actions="actions" :settings="settings" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
     
+    <force-discard-view v-bind:class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :settings="settings" v-on:clientResponse="sendClientResponse"/>
+
     <events-view :events="events" :players="players"/>
+
   </div>
 </template>
 
@@ -56,6 +62,7 @@ import playersView from './components/players-view.vue'
 import eventsView from './components/events-view.vue'
 import actionView from './components/action-view.vue'
 import modal from './components/modal.vue'
+import forceDiscardView from './components/force-discard-view.vue'
 import {setGlobalLanguage} from './translations'
 import settingsModal from './components/settings-modal.vue'
 
@@ -69,6 +76,7 @@ export default {
     actionView,
     modal,
     settingsModal,
+    forceDiscardView
   },
 
   data: function() {
@@ -86,6 +94,7 @@ export default {
         joinModalVisible: false,
         leaveModalVisible: false,
         settingsModalVisible: false,
+        forceDiscardVisible: false,
         currentPlayerId: 1,
         recentResponse: null,
         game_status: "",
@@ -113,7 +122,7 @@ export default {
       me: function() {
           let self = this;
           return this.players.find(function(player) {
-            return player.attributes.id === self.player.id;
+            return player.attributes.id == self.player.id;
           })
       },
       ownTurn: function() {
@@ -188,6 +197,8 @@ export default {
     },
 
     handleResponse: function(response) {
+        this.recentResponse = response;
+        this.forceDiscardVisible = false;
         if (response.code == 1) { // ID ACK
             this.player.id = parseInt(response.additional_info);
             localStorage.setItem("name", this.player.name);
@@ -201,7 +212,7 @@ export default {
         } else if (response.code == 103) { // move bandit request
         
         } else if (response.code == 104) { // discard resources request
-        
+         this.forceDiscardVisible = true;
         }
     },
 
@@ -291,7 +302,7 @@ export default {
 html, body {
     margin: 0;
     background-color: #222;
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 #app {
@@ -338,7 +349,6 @@ html, body {
 #debug-checkbox {
     height: auto;
 }
-
 
 input {
     border: none;

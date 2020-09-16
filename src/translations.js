@@ -55,8 +55,11 @@ t_EN["MOVE_BANDIT"] = "move bandit";
 t_EN["STEAL_CARD"] = "steal card";
 t_EN["TRADING"] = "trade with bank";
 t_EN["BUILDING"] = "building";
+t_EN["YOUR_FORCE_DISCARD"] = "discarding";
+t_EN["FINISH_DISCARD"] = "confirm discard";
 t_EN["SETTINGS"] = "settings";
 t_EN["LANGUAGE"] = "language";
+
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -105,6 +108,8 @@ t_NL["MOVE_BANDIT"] = "verplaats de bandiet";
 t_EN["STEAL_CARD"] = "steel een kaart";
 t_NL["TRADING"] = "ruilen met de bank";
 t_NL["BUILDING"] = "bouwen";
+t_NL["YOUR_FORCE_DISCARD"] = "kaarten afleggen";
+t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
 
