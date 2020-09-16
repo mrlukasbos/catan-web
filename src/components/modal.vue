@@ -1,20 +1,16 @@
 <template>
-  <div class="modal" v-bind:class="visibleClass">
+  <div class="modal" @click.self="close">
     <div class="modal__body">
-      <slot></slot>
+      <slot />
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  props: ['visible'],
-  computed: {
-    visibleClass: function () {
-      if (this.visible) {
-        return 'modal--visible';
-      }
-      return '';
+  methods: {
+    close() {
+      this.$emit("close")
     }
   }
 }

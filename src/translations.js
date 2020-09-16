@@ -46,6 +46,7 @@ t_EN["WAITING_FOR_PLAYERS"] = "waiting for players";
 t_EN["WAITING_FOR_TAKEOFF"] = "waiting for takeoff";
 t_EN["GAME_RUNNING"] = "running";
 t_EN["CANCEL"] = "cancel";
+t_EN["APPLY"] = "apply";
 t_EN["SETUP"] = "determine first player";
 t_EN["INITIAL_BUILDING"] = "first buildphase";
 t_EN["THROW_DICE"] = "throwing dice";
@@ -98,36 +99,37 @@ t_NL["WAITING_FOR_PLAYERS"] = "wachten op spelers";
 t_NL["WAITING_FOR_TAKEOFF"] = "wachten tot spel start";
 t_NL["GAME_RUNNING"] = "spel is gestart";
 t_NL["CANCEL"] = "annuleren";
-t_NL["SETUP"] = "Eerste speler bepalen";
-t_NL["INITIAL_BUILDING"] = "Eerste bouwronde";
-t_NL["THROW_DICE"] = "Dobbelsteen gooien";
-t_NL["FORCE_DISCARD"] = "Verplicht kaarten afleggen";
-t_NL["MOVE_BANDIT"] = "Verplaats de bandiet";
-t_EN["STEAL_CARD"] = "Steel een kaart";
-t_NL["TRADING"] = "Ruilen met de bank";
-t_NL["BUILDING"] = "Bouwen";
+t_NL["APPLY"] = "toepassen";
+t_NL["SETUP"] = "eerste speler bepalen";
+t_NL["INITIAL_BUILDING"] = "eerste bouwronde";
+t_NL["THROW_DICE"] = "dobbelsteen gooien";
+t_NL["FORCE_DISCARD"] = "verplicht kaarten afleggen";
+t_NL["MOVE_BANDIT"] = "verplaats de bandiet";
+t_EN["STEAL_CARD"] = "steel een kaart";
+t_NL["TRADING"] = "ruilen met de bank";
+t_NL["BUILDING"] = "bouwen";
 t_NL["YOUR_FORCE_DISCARD"] = "kaarten afleggen";
 t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
 
- // lowercase translation
+// lowercase translation
 function t(key) {
-    if (key === undefined) return "";
-    var result;
-    if (lang == 'NL') { result = t_NL[key];}
-    else { result = t_EN[key];}
-    return (result === undefined) ? key : result;
+  if (key === undefined) return "";
+  var result;
+  if (lang == 'NL') { result = t_NL[key];}
+  else { result = t_EN[key];}
+  return (result === undefined) ? key : result;
 }
 
 // uppercase translation
 function T(key) {
-    var str = t(key);
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  var str = t(key);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function setGlobalLanguage(new_lang) {
-    lang = new_lang;
+  lang = new_lang;
 }
 
 export {t, T, setGlobalLanguage}

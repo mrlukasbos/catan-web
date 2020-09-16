@@ -1,73 +1,64 @@
 <template>
   <div id="app">
-    <modal :visible="joinModalVisible">
+    <modal v-show="joinModalVisible" @close="joinModalVisible = false">
       <h2> Join the game </h2>
-      <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-      <button v-on:click="hide_join_modal"> {{T("CANCEL")}} </button>
-      <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
+      <input id="fname" v-model="player.name" type="text" placeholder="Your name" name="fname">
+      <div class="modal-row">
+        <button class="button secondary" @click="joinModalVisible = false">
+          {{ T("CANCEL") }}
+        </button>
+        <button class="button primary" @click="join_game">
+          {{ T("JOIN_GAME") }}
+        </button>
+      </div>
     </modal>
 
-    <modal :visible="leaveModalVisible">
+    <modal v-show="leaveModalVisible" @close="leaveModalVisible = false">
       <h2> Leave the game </h2>
-      <h3> Are you sure you want to leave the game, {{player.name}}? </h3>
-      <button v-on:click="hide_leave_modal"> {{T("CANCEL")}} </button>
-      <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
+      <h3> Are you sure you want to leave the game, {{ player.name }}? </h3>
+      <div class="modal-row">
+        <button class="button secondary" @click="leaveModalVisible = false">
+          {{ T("CANCEL") }}
+        </button>
+        <button class="button primary" @click="leave_game">
+          {{ T("LEAVE_GAME") }}
+        </button>
+      </div>
     </modal>
 
-    <modal :visible="settingsModalVisible" class="settings-modal">
-        <div class="settings-modal-content">
-            <h1> {{T("SETTINGS")}} </h1>
-            <div class="settings-modal-row">
-                {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
-            </div>
-            <div class="settings-modal-row">
-                {{T("LANGUAGE")}}
-                <select v-model="lang">
-                    <option v-for="locale in locales" :key="'locale-'+locale.id" :value="locale.id">{{locale.name}}</option>
-                </select>
-            </div>
+    <settings-modal v-if="settingsModalVisible" :settings="settings" @close="settingsModalVisible = false" @settingsChanged="applySettings" />
 
-            <div class="settings-modal-row">
-                <span> </span>
-                <div>
-                    <button class="secondary" v-on:click="hide_settings_modal"> {{T("CANCEL")}} </button>
-                    <button class="primary" v-on:click="hide_settings_modal"> {{T("APPLY")}} </button>
-                </div>
-            </div>
+    <div class="header">
+      <span class="title"> Catan </span>
+      <div class="controls">
+        <div v-if="recentResponse" class="control" :alt="recentResponse.description">
+          {{ recentResponse.code }} {{ recentResponse.title }}
         </div>
-    </modal>
-
-      <div class="header">
-        <span class="title"> Catan </span>
-        <div class="controls">
-            <div v-if="recentResponse" class="control" :alt="recentResponse.description">
-                {{recentResponse.code}} {{recentResponse.title}}
-            </div>
-            <div class="control">
-                {{T(game_phase)}}
-            </div>
-            <div class="control">
-                {{T(game_status)}}
-            </div>
-             <div v-on:click="show_settings_modal" class="control clickable">
-                {{T("SETTINGS")}}
-            </div>    
-            <a class="control clickable" v-if="connected && !gameIsRunning" v-on:click="start_game"> {{T("START_GAME")}} </a>
-            <a class="control clickable" v-if="connected && gameIsRunning" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
-            <a class="control clickable" v-if="!joined" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
-            <a class="control clickable" v-if="joined" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
-            <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected"/>
+        <div class="control">
+          {{ T(game_phase) }}
         </div>
+        <div class="control">
+          {{ T(game_status) }}
+        </div>
+        <div class="control clickable" @click="settingsModalVisible = true">
+          {{ T("SETTINGS") }}
+        </div>    
+        <a v-if="connected && !gameIsRunning" class="control clickable" @click="start_game"> {{ T("START_GAME") }} </a>
+        <a v-if="connected && gameIsRunning" class="control clickable" @click="stop_game"> {{ T("STOP_GAME") }} </a>
+        <a v-if="!joined" class="control clickable" @click="joinModalVisible = true"> {{ T("JOIN_GAME") }} </a>
+        <a v-if="joined" class="control clickable" @click="leaveModalVisible = true"> {{ T("LEAVE_GAME") }} </a>
+        <connect :connected="connected" @connect="connect" @disconnect="kill_socket" />
+      </div>
     </div>
 
-    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
-    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode"/>
+    <board :board="board" :players="players" :settings="settings" :actions="actions" @createAction="createAction" @removeAction="removeAction" />
+    <players-view :class="{ 'players-view--visible': socket }" :players="players" :current-player-id="currentPlayerId" :settings="settings" />
     
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    <action-view :class="{ 'action-view--visible': true }" :me="me" :actions="actions" :settings="settings" @clearActions="clearActions" @createAction="createAction" @clientResponse="sendClientResponse" />
+    
+    <force-discard-view :class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :settings="settings" @clientResponse="sendClientResponse" />
 
-    <force-discard-view v-bind:class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :key="lang" :dev_mode="dev_mode" v-on:clientResponse="sendClientResponse"/>
-
-    <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="lang"/>
+    <events-view :events="events" :players="players" />
   </div>
 </template>
 
@@ -80,44 +71,72 @@ import actionView from './components/action-view.vue'
 import modal from './components/modal.vue'
 import forceDiscardView from './components/force-discard-view.vue'
 import {setGlobalLanguage} from './translations'
-import { ToggleButton } from 'vue-js-toggle-button'
+import settingsModal from './components/settings-modal.vue'
 
 export default {
   name: 'App',
   components: {
     connect,
     board,
-    ToggleButton,
     playersView,
     eventsView,
     actionView,
     modal,
+    settingsModal,
     forceDiscardView
   },
 
   data: function() {
     return {
+      settings: {
+        lang: "EN",
+        dev_mode: true,
+      },
       connected: false,
       socket: null,
       board: null,
       players: [],
       events: [],
       actions: [],
-      lang: "EN",
-      locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
-      dev_mode: true,
       joinModalVisible: false,
       leaveModalVisible: false,
-      forceDiscardVisible: false,
       settingsModalVisible: false,
+      forceDiscardVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
       game_status: "",
       game_phase: "",
       player: {
-          id: -1,
-          name: ""
+        id: -1,
+        name: ""
       }
+    }
+  },
+
+  computed: {
+    currentPlayer: function() {
+      let self = this;
+      return this.players.find(function(player) {
+        return player.attributes.id === self.currentPlayerId;
+      })
+    },
+    me: function() {
+      let self = this;
+      return this.players.find(function(player) {
+        return player.attributes.id == self.player.id;
+      })
+    },
+    ownTurn: function() {
+      return this.player.id == this.currentPlayerId;
+    }, 
+    gameIsRunning: function() {
+      return this.game_status == "GAME_RUNNING";
+    },
+    joined: function() {
+      let self = this;
+      return this.players.some(function(player) {
+        return player.attributes.id == self.player.id;
+      })
     }
   },
 
@@ -125,40 +144,6 @@ export default {
   mounted: function() {
     console.log("autoconnecting...")
     this.connect("localhost", 10007);
-  },
-
-  watch: {
-    lang: function() {
-        setGlobalLanguage(this.lang);
-        this.$forceUpdate();
-    }
-  },
-
-  computed: {
-      currentPlayer: function() {
-          let self = this;
-          return this.players.find(function(player) {
-            return player.attributes.id === self.currentPlayerId;
-          })
-      },
-      me: function() {
-          let self = this;
-          return this.players.find(function(player) {
-            return player.attributes.id == self.player.id;
-          })
-      },
-      ownTurn: function() {
-        return this.player.id == this.currentPlayerId;
-      }, 
-      gameIsRunning: function() {
-          return this.game_status == "GAME_RUNNING";
-      },
-      joined: function() {
-        let self = this;
-        return this.players.some(function(player) {
-            return player.attributes.id == self.player.id;
-        })
-      }
   },
 
   methods: {
@@ -171,17 +156,17 @@ export default {
       }
 
       this.socket.onclose = () => {
-          this.kill_socket();
+        this.kill_socket();
       }
 
       this.socket.onopen = () => {
-          this.connected = true;
+        this.connected = true;
 
-          if (localStorage.getItem("id") && localStorage.getItem("name")) {
-            this.player.name = localStorage.getItem("name");
-            this.player.id = localStorage.getItem("id");
-            this.join_game();
-          }
+        if (localStorage.getItem("id") && localStorage.getItem("name")) {
+          this.player.name = localStorage.getItem("name");
+          this.player.id = localStorage.getItem("id");
+          this.join_game();
+        }
       }
 
       this.socket.onmessage = (data) => {
@@ -189,53 +174,53 @@ export default {
         let json = JSON.parse(message);
 
         if (json.model == "game") {
-            this.board = json.attributes.board.attributes;
-            this.players = json.attributes.players;
-            this.currentPlayerId = json.attributes.currentPlayer;
-            this.game_status = json.attributes.status;
-            this.game_phase = json.attributes.phase;
+          this.board = json.attributes.board.attributes;
+          this.players = json.attributes.players;
+          this.currentPlayerId = json.attributes.currentPlayer;
+          this.game_status = json.attributes.status;
+          this.game_phase = json.attributes.phase;
 
-            if (json.attributes.events) {
-                this.events = json.attributes.events.reverse();
-            }
+          if (json.attributes.events) {
+            this.events = json.attributes.events.reverse();
+          }
         } else if (json.model == "response") {
-            this.handleResponse(json.attributes);
+          this.handleResponse(json.attributes);
         }
       }
     },
     sendClientResponse: function(response) {
-        let msg = {
-            model: "client-response",
-            attributes: response
-        }
+      let msg = {
+        model: "client-response",
+        attributes: response
+      }
 
-        if (this.socket) {
-          this.socket.send(JSON.stringify(msg));
-        }
+      if (this.socket) {
+        this.socket.send(JSON.stringify(msg));
+      }
     },
 
     clearActions: function() {
-        this.actions = [];
+      this.actions = [];
     },
 
     handleResponse: function(response) {
-        this.recentResponse = response;
-        this.forceDiscardVisible = false;
-        if (response.code == 1) { // ID ACK
-            this.player.id = parseInt(response.additional_info);
-            localStorage.setItem("name", this.player.name);
-            localStorage.setItem("id", this.player.id);
-        } else if (response.code == 100) { // trade request
+      this.recentResponse = response;
+      this.forceDiscardVisible = false;
+      if (response.code == 1) { // ID ACK
+        this.player.id = parseInt(response.additional_info);
+        localStorage.setItem("name", this.player.name);
+        localStorage.setItem("id", this.player.id);
+      } else if (response.code == 100) { // trade request
 
-        } else if (response.code == 101) { // build request
+      } else if (response.code == 101) { // build request
 
-        } else if (response.code == 102) { // initial build request
-        
-        } else if (response.code == 103) { // move bandit request
-        
-        } else if (response.code == 104) { // discard resources request
-         this.forceDiscardVisible = true;
-        }
+      } else if (response.code == 102) { // initial build request
+      
+      } else if (response.code == 103) { // move bandit request
+      
+      } else if (response.code == 104) { // discard resources request
+        this.forceDiscardVisible = true;
+      }
     },
 
     kill_socket: function () {
@@ -245,78 +230,75 @@ export default {
       }
       this.connected = false;
     },
+
     start_game: function() {
       if (this.socket) {
-          this.socket.send(JSON.stringify({
-              model: 'control',
-              attributes: {
-                  command: 'START'
-              }
-          }));
+        this.socket.send(JSON.stringify({
+          model: 'control',
+          attributes: {
+            command: 'START'
+          }
+        }));
       }
     },
+
     stop_game: function() {
-        if (this.socket) {
-             this.socket.send(JSON.stringify({
-              model: 'control',
-              attributes: {
-                  command: 'STOP'
-              }
-          }));
-        }
+      if (this.socket) {
+        this.socket.send(JSON.stringify({
+          model: 'control',
+          attributes: {
+            command: 'STOP'
+          }
+        }));
+      }
     },
+
+    applySettings(newSettings) {
+      this.settings = newSettings;
+      setGlobalLanguage(this.settings.lang);
+      this.$forceUpdate();
+    },
+
     selectColor: function(evt, color) {
-        this.player.color = color.code;
+      this.player.color = color.code;
     },
 
-    show_settings_modal: function() {
-        this.settingsModalVisible = true;
-    },
-    hide_settings_modal: function() {
-        this.settingsModalVisible = false;
-    },
-
-    show_join_modal: function() {
-        this.joinModalVisible = true;
-    },
-    hide_join_modal: function() {
-        this.joinModalVisible = false;
-    },
     join_game: function() {
-        console.log("registering new player: " + this.player.name);
-        console.log(this.player);
+      console.log("registering new player: " + this.player.name);
+      console.log(this.player);
 
-        let joinMessage = JSON.stringify({
-            model: "join",
-            attributes: {
-                name: this.player.name,
-                id: this.player.id,
-            }
-        });
-        console.log("sending this message to CATAN SERVER: " + joinMessage);
-        this.socket.send(joinMessage);
-        this.hide_join_modal();
+      let joinMessage = JSON.stringify({
+        model: "join",
+        attributes: {
+          name: this.player.name,
+          id: this.player.id,
+        }
+      });
+      console.log("sending this message to CATAN SERVER: " + joinMessage);
+      this.socket.send(joinMessage);
+      this.joinModalVisible = false;
     },
+
     leave_game() {
-         let leaveMessage = JSON.stringify({
-            model: "leave",
-            attributes: {
-                name: this.player.name,
-                id: this.player.id,
-            }
-        });
-        console.log("sending this message to CATAN SERVER: " + leaveMessage);
-        this.socket.send(leaveMessage);
-        this.hide_leave_modal();
-    },
-    show_leave_modal() {
-        this.leaveModalVisible = true;
-    },
-    hide_leave_modal() {
-        this.leaveModalVisible = false;
+      let leaveMessage = JSON.stringify({
+        model: "leave",
+        attributes: {
+          name: this.player.name,
+          id: this.player.id,
+        }
+      });
+      console.log("sending this message to CATAN SERVER: " + leaveMessage);
+      this.socket.send(leaveMessage);
+      this.leaveModalVisible = false;
     },
     createAction: function (action, object, resources) {
       this.actions.push({action: action, object: object, resources: resources});
+    },
+    removeAction: function(action) {
+      const index = this.actions.indexOf(action);
+      if (index > -1) {
+        this.actions.splice(index, 1);
+      }
     }
   }
 }
@@ -352,31 +334,6 @@ html, body {
     background-color: #000;
 }
 
-.settings-modal {
-    padding-left: 0;
-}
-
-.settings-modal-content {
-    display: flex;
-    flex-direction: column;
-    width: 40%;
-    max-width: 40%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.settings-modal-row {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.settings-modal-row:not(:last-child) {
-    border-bottom: .5px solid #efefef;
-}
-
 .title {
     font-weight: bold;
 }
@@ -403,39 +360,6 @@ html, body {
 
 #debug-checkbox {
     height: auto;
-}
-
-button {
-    border: none;
-    background-color:  rgba(46, 167, 6, 1);
-    height:36px;
-    border-radius: 4px;
-    color: white;
-    font-weight: 100;
-    padding-right: 12px;
-    padding-left: 12px;
-    margin: 0;
-    cursor: pointer;
-}
-
-
-button:hover {
-    background-color:  rgb(41, 148, 5);
-    transition: background-color .12s;
-}
-
-button:disabled {
-    background-color: darkgray;
-    cursor: not-allowed;
-}
-
-button:disabled:hover {
-    background-color: darkgray;
-}
-
-code {
-    background: #efefef;
-    font-family: 'Courier New', Courier, monospace;
 }
 
 input {
