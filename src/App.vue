@@ -1,41 +1,21 @@
 <template>
   <div id="app">
-    <modal :visible="joinModalVisible" v-on:close="joinModalVisible = false">
-      <h2> Join the game </h2>
-      <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-      <button v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
-      <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
+    <modal v-show="joinModalVisible" v-on:close="joinModalVisible = false">
+        <h2> Join the game </h2>
+        <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
+        <button v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
+        <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
     </modal>
 
-    <modal :visible="leaveModalVisible" v-on:close="leaveModalVisible = false">
+    <modal v-show="leaveModalVisible" v-on:close="leaveModalVisible = false">
       <h2> Leave the game </h2>
       <h3> Are you sure you want to leave the game, {{player.name}}? </h3>
       <button v-on:click="leaveModalVisible = false"> {{T("CANCEL")}} </button>
       <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
     </modal>
 
-    <modal :visible="settingsModalVisible" v-on:close="settingsModalVisible = false" class="settings-modal">
-        <div class="settings-modal-content">
-            <h1> {{T("SETTINGS")}} </h1>
-            <div class="settings-modal-row">
-                {{T("DEV_MODE")}} <toggle-button v-model="dev_mode" :labels="{checked: t('ON'), unchecked: t('OFF')}" name="'debug'"/>
-            </div>
-            <div class="settings-modal-row">
-                {{T("LANGUAGE")}}
-                <select v-model="lang">
-                    <option v-for="locale in locales" :key="'locale-'+locale.id" :value="locale.id">{{locale.name}}</option>
-                </select>
-            </div>
+    <settings-modal v-if="settingsModalVisible" v-on:close="settingsModalVisible = false" v-on:settingsChanged="applySettings" :settings="settings"/>
 
-            <div class="settings-modal-row">
-                <span> </span>
-                <div>
-                    <button class="secondary" v-on:click="settingsModalVisible = false"> {{T("CANCEL")}} </button>
-                    <button class="primary" v-on:click="settingsModalVisible = false"> {{T("APPLY")}} </button>
-                </div>
-            </div>
-        </div>
-    </modal>
 
       <div class="header">
         <span class="title"> Catan </span>
@@ -57,12 +37,12 @@
         </div>
     </div>
 
-    <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
-    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode"/>
+    <board :board="board" :players="players" :lang="settings.lang" :dev_mode="settings.dev_mode" v-on:createAction="createAction"/>
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="settings.dev_mode"/>
     
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :dev_mode="settings.dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
     
-    <events-view :events="events" :players="players" :dev_mode="dev_mode"/>
+    <events-view :events="events" :players="players" :dev_mode="settings.dev_mode"/>
   </div>
 </template>
 
@@ -74,42 +54,43 @@ import eventsView from './components/events-view.vue'
 import actionView from './components/action-view.vue'
 import modal from './components/modal.vue'
 import {setGlobalLanguage} from './translations'
-import { ToggleButton } from 'vue-js-toggle-button'
+import settingsModal from './components/settings-modal.vue'
 
 export default {
   name: 'App',
   components: {
     connect,
     board,
-    ToggleButton,
     playersView,
     eventsView,
     actionView,
     modal,
+    settingsModal,
   },
 
   data: function() {
     return {
-      connected: false,
-      socket: null,
-      board: null,
-      players: [],
-      events: [],
-      actions: [],
-      lang: "EN",
-      locales: [ {id: 'EN', name: 'English'}, {id: 'NL', name: 'Nederlands'}],
-      dev_mode: true,
-      joinModalVisible: false,
-      leaveModalVisible: false,
-      settingsModalVisible: false,
-      currentPlayerId: 1,
-      recentResponse: null,
-      game_status: "",
-      game_phase: "",
-      player: {
-          id: -1,
-          name: ""
-      }
+        settings: {
+            lang: "EN",
+            dev_mode: true,
+        },
+        connected: false,
+        socket: null,
+        board: null,
+        players: [],
+        events: [],
+        actions: [],
+        joinModalVisible: false,
+        leaveModalVisible: false,
+        settingsModalVisible: false,
+        currentPlayerId: 1,
+        recentResponse: null,
+        game_status: "",
+        game_phase: "",
+        player: {
+            id: -1,
+            name: ""
+        }
     }
   },
 
@@ -117,13 +98,6 @@ export default {
   mounted: function() {
     console.log("autoconnecting...")
     this.connect("localhost", 10007);
-  },
-
-  watch: {
-    lang: function() {
-        setGlobalLanguage(this.lang);
-        this.$forceUpdate();
-    }
   },
 
   computed: {
@@ -254,6 +228,11 @@ export default {
               }
           }));
         }
+    },
+    applySettings(newSettings) {
+        this.settings = newSettings;
+        setGlobalLanguage(this.settings.lang);
+        this.$forceUpdate();
     },
     selectColor: function(evt, color) {
         this.player.color = color.code;

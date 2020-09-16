@@ -1,19 +1,19 @@
 <template>
   <div class="board">
-    <modal :visible="nodeModal">
+    <modal v-show="nodeModal">
       <h2> Create a action for this node </h2>
       <code v-if="dev_mode"> {{nodeModal}} </code> 
       <button v-on:click="buildVillage"> Build village </button>
       <button v-on:click="buildCity"> Build city </button>
       <button v-on:click="closeNodeModal"> Cancel </button>
     </modal>
-    <modal :visible="edgeModal">
+    <modal v-show="edgeModal">
       <h2> Create a action for this edge </h2>
       <code v-if="dev_mode"> {{edgeModal}} </code>
       <button v-on:click="buildRoad"> Build road </button>
       <button v-on:click="closeEdgeModal"> Cancel </button>
     </modal>
-    <modal :visible="tileModal">
+    <modal v-show="tileModal">
       <h2> Create a action for this tile </h2>
       <code v-if="dev_mode"> {{tileModal}} </code>
       <button v-on:click="placeBandit"> Place bandit </button>
