@@ -3,9 +3,9 @@
     <modal v-show="joinModalVisible" v-on:close="joinModalVisible = false">
         <h2> Join the game </h2>
         <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-              <div class="modal-row">
-        <button class="button secondary" v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
-        <button class="button primary"  v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
+        <div class="modal-row">
+            <button class="button secondary" v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
+            <button class="button primary"  v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
         </div>
     </modal>
 

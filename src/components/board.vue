@@ -11,6 +11,14 @@ import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import {T} from '../translations';
 
+
+const Structure = {
+  VILLAGE: "VILLAGE",
+  CITY: "CITY",
+  ROAD: "ROAD",
+  NONE: "NONE"
+}
+
 export default {
   name: 'connect',
   props: ['board', 'players', 'settings', 'actions'],
@@ -74,15 +82,23 @@ export default {
         this.init = true;
       }
     },
-    actions: function() {
-      let self = this;
-      this.actions.forEach(action => {
-        let key = action.object.key;
-        if (action.action === "buildRoad") {
-          let edge = self.getEdgeByKey(key);
-          edge.attributes.selected = true;
+    actions: function(newActions, oldActions) {
+      // when actions disappear the have to be un-selected
+      oldActions.forEach(oldAction => {
+        oldAction.object.conceptStructure = null;
+      })
+
+      // set selected of the present actions to true
+      newActions.forEach(action => {
+        console.log(action);
+
+        switch (action.action) {
+          case "buildRoad": action.object.conceptStructure = Structure.ROAD; break;
+          case "buildVillage": action.object.conceptStructure = Structure.VILLAGE; break;
+          case "buildCity":  action.object.conceptStructure = Structure.CITY; break;
         }
       })
+
       this.updateEdges();
       this.updateTiles();
       this.updateNodes();
@@ -287,9 +303,9 @@ export default {
           .on("click", function(d) { self.click_node(d) })
           .on("mouseover", function (d) {
 
-          if (d.structure === "VILLAGE") {
+          if (d.structure === Structure.VILLAGE && !d.conceptStructure || d.conceptStructure === Structure.VILLAGE) {
             self.hint = "Build city here";
-          } else if (d.structure !== "CITY") {
+          } else if (d.structure !== Structure.CITY) {
             self.hint = "Build village here";
           }
 
@@ -327,19 +343,22 @@ export default {
       }));
 
       this.d3_nodes.attr("d", function (d) {
-            if (d.structure == "VILLAGE") {
+            if ((d.structure === Structure.VILLAGE && !d.conceptStructure) || d.conceptStructure === Structure.VILLAGE) {
                 return "M0 -10 L10 -2 L10 10 L-10 10 L-10 -2 L0 -10 Z"
-            } else if (d.structure == "CITY") {
+            } else if (d.structure === Structure.CITY || d.conceptStructure === Structure.CITY) {
                 return "M-12 -2 L1 -2 L1 -10 L6 -12 L11 -10 L11 12 L-12 12 L-12 -2 Z"
             } else {
                 return "m -7.5, 0 a 7.5,7.5 0 1,0 15,0 a 7.5,7.5 0 1,0 -15,0"
             }
         }).attr('fill', function (d) {
+            if (d.conceptStructure) {
+              return "#ff0000";
+            } 
             return d.player_color;
         }).attr("class", function(d) {
-            if (d.structure == "VILLAGE") {
+            if ((d.structure === Structure.VILLAGE && !d.conceptStructure) || d.conceptStructure === Structure.VILLAGE) {
                 return "node node--village"
-            } else if (d.structure == "CITY") {
+            } else if (d.structure === Structure.CITY || d.conceptStructure === Structure.CITY) {
                 return "node node--city"
             }
             return "node node--empty"
@@ -376,7 +395,7 @@ export default {
       this.d3_edges.attr("stroke", function (d) {
           if (d.attributes.road) {
             return d.attributes.player_color;
-          } else if (d.attributes.selected) {
+          } else if (d.attributes.conceptStructure) {
             return "#ff0000";
           }
           return "#fff";
@@ -384,7 +403,7 @@ export default {
         .attr("class", function (d) {
           if (d.attributes.road) {
             return "border border--road"
-          } else if (d.attributes.selected) {
+          } else if (d.attributes.conceptStructure) {
             return "border border--road"
           } else {
             return "border border--empty"
@@ -393,19 +412,25 @@ export default {
     },
 
     click_node: function(node) {
-      if (node.structure === "VILLAGE") {
+      if ((node.structure === Structure.VILLAGE && !node.conceptStructure) || node.conceptStructure == Structure.VILLAGE) {
         this.buildCity(node);
-      } else if (node.structure !== "VILLAGE" || node.structure !== "CITY") {
+      } else if (node.conceptStructure === Structure.CITY) {
+        this.removeAction(node);
+      } else if  (node.structure !== Structure.VILLAGE || node.structure !== Structure.CITY) {
         this.buildVillage(node);
       }
     },
 
+    // an object can have multiple actions (i.e. building both a village and a city)
     removeAction: function(obj) {
-      let action = this.actions.find(action => {
-        return action.object.key === obj.key;
-      })
-      obj.selected = false;
-      this.$emit("removeAction", action);
+      obj.conceptStructure = null;
+      let actionsToRemove = this.actions.filter(action => {
+        return action.object.key === obj.key
+      });
+
+      actionsToRemove.forEach(action => {
+        this.$emit("removeAction", action);
+      });
     },
 
     buildVillage: function (node) {
@@ -425,9 +450,8 @@ export default {
     },
 
     click_edge: function(edge) {
-      if (edge.selected) {
+      if (edge.conceptStructure) {
         this.removeAction(edge)
-        this.updateEdges(); // todo make this updateBoard or something
       } else {
         this.buildRoad(edge)
       }
