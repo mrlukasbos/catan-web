@@ -81,28 +81,28 @@ export default {
 
   data: function() {
     return {
-        settings: {
-            lang: "EN",
-            dev_mode: true,
-        },
-        connected: false,
-        socket: null,
-        board: null,
-        players: [],
-        events: [],
-        actions: [],
-        joinModalVisible: false,
-        leaveModalVisible: false,
-        settingsModalVisible: false,
-        forceDiscardVisible: false,
-        currentPlayerId: 1,
-        recentResponse: null,
-        game_status: "",
-        game_phase: "",
-        player: {
-            id: -1,
-            name: ""
-        }
+      settings: {
+          lang: "EN",
+          dev_mode: true,
+      },
+      connected: false,
+      socket: null,
+      board: null,
+      players: [],
+      events: [],
+      actions: [],
+      joinModalVisible: false,
+      leaveModalVisible: false,
+      settingsModalVisible: false,
+      forceDiscardVisible: false,
+      currentPlayerId: 1,
+      recentResponse: null,
+      game_status: "",
+      game_phase: "",
+      player: {
+          id: -1,
+          name: ""
+      }
     }
   },
 
