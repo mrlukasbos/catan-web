@@ -3,21 +3,24 @@
     <modal v-show="joinModalVisible" v-on:close="joinModalVisible = false">
         <h2> Join the game </h2>
         <input type="text" id="fname" placeholder="Your name" name="fname" v-model=player.name>
-        <button v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
-        <button v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
+              <div class="modal-row">
+        <button class="button secondary" v-on:click="joinModalVisible = false"> {{T("CANCEL")}} </button>
+        <button class="button primary"  v-on:click="join_game"> {{T("JOIN_GAME")}} </button>
+        </div>
     </modal>
 
     <modal v-show="leaveModalVisible" v-on:close="leaveModalVisible = false">
       <h2> Leave the game </h2>
       <h3> Are you sure you want to leave the game, {{player.name}}? </h3>
-      <button v-on:click="leaveModalVisible = false"> {{T("CANCEL")}} </button>
-      <button v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
+      <div class="modal-row">
+        <button class="button secondary" v-on:click="leaveModalVisible = false"> {{T("CANCEL")}} </button>
+        <button class="button primary" v-on:click="leave_game"> {{T("LEAVE_GAME")}} </button>
+      </div>
     </modal>
 
     <settings-modal v-if="settingsModalVisible" v-on:close="settingsModalVisible = false" v-on:settingsChanged="applySettings" :settings="settings"/>
 
-
-      <div class="header">
+    <div class="header">
         <span class="title"> Catan </span>
         <div class="controls">
             <div class="control">
@@ -26,7 +29,7 @@
             <div class="control">
                 {{T(game_status)}}
             </div>
-             <div v-on:click="settingsModalVisible = true" class="control clickable">
+                <div v-on:click="settingsModalVisible = true" class="control clickable">
                 {{T("SETTINGS")}}
             </div>    
             <a class="control clickable" v-if="connected && !gameIsRunning" v-on:click="start_game"> {{T("START_GAME")}} </a>
@@ -40,7 +43,7 @@
     <board :board="board" :players="players" :lang="settings.lang" :dev_mode="settings.dev_mode" v-on:createAction="createAction"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="settings.dev_mode"/>
     
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :dev_mode="settings.dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    <action-view v-bind:class="{ 'action-view--visible': true }" :me="me" :actions="actions" :dev_mode="settings.dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
     
     <events-view :events="events" :players="players" :dev_mode="settings.dev_mode"/>
   </div>
@@ -302,31 +305,6 @@ html, body {
     background-color: #000;
 }
 
-.settings-modal {
-    padding-left: 0;
-}
-
-.settings-modal-content {
-    display: flex;
-    flex-direction: column;
-    width: 40%;
-    max-width: 40%;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.settings-modal-row {
-    display: flex;
-    flex-direction: row;
-    height: 50px;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.settings-modal-row:not(:last-child) {
-    border-bottom: .5px solid #efefef;
-}
-
 .title {
     font-weight: bold;
 }
@@ -355,46 +333,6 @@ html, body {
     height: auto;
 }
 
-button {
-    border: none;
-    background-color:  rgba(46, 167, 6, 1);
-    height:36px;
-    border-radius: 4px;
-    color: white;
-    font-weight: 600;
-    padding-right: 24px;
-    padding-left: 24px;
-    margin: 0;    
-    cursor: pointer;
-}
-
-button:hover {
-    background-color:  rgb(41, 148, 5);
-    transition: background-color .12s;
-}
-
-.primary {
-    background-color:  rgba(46, 167, 6, 1);
-}
-
-.primary:hover {
-    background-color:  rgb(41, 148, 5);
-    transition: background-color .12s;
-}
-
-.secondary {
-    background-color:  rgba(200, 200, 200, 1);
-}
-
-.secondary:hover {
-    background-color:  rgba(150, 150, 150, 1);
-    transition: background-color .12s;
-}
-
-code {
-    background: #efefef;
-    font-family: 'Courier New', Courier, monospace;
-}
 
 input {
     border: none;

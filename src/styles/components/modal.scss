@@ -1,17 +1,41 @@
 .modal {
   width: 100vw;
   height: 100vw;
-  background-color: rgba(200, 200, 200, 0.5);
+  background-color: rgba(0, 0, 0, 0.7);
   position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   transition: visibility .3s, opacity .3s;
   z-index: 999;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 
   &__body {
     padding: 30px;
-    background-color: rgba(255,255,255,0.95);
+    background-color: rgba(50,50,50,0.95);
+    color: white;
+    width: 600px;
+    height: 300px;
+    margin-top: 60px;
+    border-radius: 8px;
 
     button:not(:last-child) {
       margin-right: 1px;
+    }
+  }
+
+  .modal-row {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    align-items: center;
+    justify-content: space-between;
+
+    &:not(:last-child) {
+      border-bottom: .5px solid #555;
     }
   }
 }

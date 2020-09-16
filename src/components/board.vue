@@ -1,26 +1,8 @@
 <template>
   <div class="board">
-    <modal v-show="nodeModal">
-      <h2> Create a action for this node </h2>
-      <code v-if="dev_mode"> {{nodeModal}} </code> 
-      <button v-on:click="buildVillage"> Build village </button>
-      <button v-on:click="buildCity"> Build city </button>
-      <button v-on:click="closeNodeModal"> Cancel </button>
-    </modal>
-    <modal v-show="edgeModal">
-      <h2> Create a action for this edge </h2>
-      <code v-if="dev_mode"> {{edgeModal}} </code>
-      <button v-on:click="buildRoad"> Build road </button>
-      <button v-on:click="closeEdgeModal"> Cancel </button>
-    </modal>
-    <modal v-show="tileModal">
-      <h2> Create a action for this tile </h2>
-      <code v-if="dev_mode"> {{tileModal}} </code>
-      <button v-on:click="placeBandit"> Place bandit </button>
-      <button v-on:click="closeTileModal"> Cancel </button>
-    </modal>
     <div id="d3-board-holder"></div>
     <div id="d3-game-holder"></div>
+    <div v-show="hint" class="hint"> <div class="hint-text"> {{hint}}</div></div>
   </div>
 </template>
 
@@ -28,12 +10,10 @@
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import {T} from '../translations';
-import modal from './modal.vue';
 
 export default {
   name: 'connect',
   props: ['board', 'players', 'lang', 'dev_mode'],
-  components: {modal},
 
   data: function() {
       return {
@@ -47,9 +27,7 @@ export default {
         bandits: [],
         svg_board: null,
         svg_game: null,
-        nodeModal: null,
-        edgeModal: null,
-        tileModal: null,
+        hint: "",
 
         d3_tiles: null,
         d3_nodes: null,
@@ -136,7 +114,7 @@ export default {
       let self = this;
       this.d3_types.data(self.topology.objects.hexagons.geometries)
       this.d3_types.text(function (d) {
-          var str = "";
+          let str = "";
           if (d.tile.attributes.resource_type === "SEA") {
             if (d.tile.attributes.harbour_type !== "HARBOUR_NONE") {
               str = d.tile.attributes.harbour_type;
@@ -217,7 +195,13 @@ export default {
         .attr("class", function (d) {
           return "tile " + d.tile.attributes.resource_type;
         })
-        .on("click", function(d) { self.click_tile(d.tile.attributes) });
+        .on("click", function(d) { self.click_tile(d.tile.attributes) })
+        .on("mouseover", function() {
+          self.hint = "Place bandit here"
+        })
+        .on("mouseout", function() {
+          self.hint = ""
+        });
     },
 
     createHarbours() {
@@ -248,7 +232,7 @@ export default {
           .data(self.bandits)
           .enter().append("path")
           .attr("transform", function (d) {
-            var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+            let coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
             return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
           })
           .attr("d", "M-10 35 m -5, 0 a 10,10 0 1,0 30,0 a 10,10 0 1,0 -30,0");
@@ -259,7 +243,7 @@ export default {
       let self = this;
       this.d3_bandits.data(self.bandits);
       this.d3_bandits.attr("transform", function (d) {
-        var coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
+        let coordinate = self.path.centroid(topojson.feature(self.topology, self.getHexByKey(d.attributes.tile_key)));
         return "translate(" + coordinate[0] + "," + coordinate[1] + ")";
       });
     },
@@ -276,29 +260,38 @@ export default {
           //   transform: translate(194px,487px) scale(1.1);
           // })
           .attr("transform", function (d) {
-              var coordinate = self.path.centroid(topojson.merge(self.topology, [
+              let coordinate = self.path.centroid(topojson.merge(self.topology, [
                   self.getHexByKey(d.t_key), self.getHexByKey(d.l_key), self.getHexByKey(d.r_key)
               ]));
               return "translate(" + coordinate[0] + "," + coordinate[1] + ") scale(1.0)";
           })
           .on("click", function(d) { self.click_node(d) })
-          .on("mouseover", function () {
+          .on("mouseover", function (d) {
+
+          if (d.structure === "VILLAGE") {
+            self.hint = "Build city here";
+          } else if (d.structure !== "CITY") {
+            self.hint = "Build village here";
+          }
+
             d3.select(this)
            .transition()
            .duration(300)
            .attr("transform", function (d) {
-              var coordinate = self.path.centroid(topojson.merge(self.topology, [
+              let coordinate = self.path.centroid(topojson.merge(self.topology, [
                   self.getHexByKey(d.t_key), self.getHexByKey(d.l_key), self.getHexByKey(d.r_key)
               ]));
               return "translate(" + coordinate[0] + "," + coordinate[1] + ") scale(1.2)";
             })
           })
           .on("mouseout", function () {
+          self.hint = "";
+
           d3.select(this)
           .transition()
           .duration(300)
           .attr("transform", function (d) {
-            var coordinate = self.path.centroid(topojson.merge(self.topology, [
+            let coordinate = self.path.centroid(topojson.merge(self.topology, [
                 self.getHexByKey(d.t_key), self.getHexByKey(d.l_key), self.getHexByKey(d.r_key)
             ]));
             return "translate(" + coordinate[0] + "," + coordinate[1] + ") scale(1.0)";
@@ -343,12 +336,18 @@ export default {
           .enter().append("path")    
           .attr("d", function (d) {
               return self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
-                var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
-                var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
+                let edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+                let edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
                 return (edge1 == d || edge2 == d);
               }))
           })
-          .on("click", function(d) { self.click_edge(d.attributes) });
+          .on("click", function(d) { self.click_edge(d.attributes) })
+          .on("mouseover", function() { 
+            self.hint = "Place road";
+          })
+          .on("mouseout", function() {
+            self.hint = "";
+          });
     },
 
     updateEdges() {
@@ -370,62 +369,47 @@ export default {
         })
     },
 
-    click_node: function(data) {
-      console.log({"clicked-node":data});
-      this.nodeModal = data;
+    click_node: function(node) {
+      if (node.structure === "VILLAGE") {
+        this.buildCity(node);
+      } else if (node.structure !== "VILLAGE" || node.structure !== "CITY") {
+        this.buildVillage(node);
+      }
     },
 
-    buildVillage: function () {
-      this.$emit("createAction", "buildVillage", this.nodeModal, [{type: "GRAIN", value: -1},{type: "WOOL", value: -1},{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
-      this.nodeModal = null;
+    buildVillage: function (node) {
+      this.$emit("createAction", "buildVillage", node, [{type: "GRAIN", value: -1},{type: "WOOL", value: -1},{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
     },
 
-    buildCity: function () {
-      this.$emit("createAction", "buildCity", this.nodeModal, [{type: "GRAIN", value: -2},{type: "ORE", value: -3}]);
-      this.nodeModal = null;
+    buildCity: function (node) {
+      this.$emit("createAction", "buildCity", node, [{type: "GRAIN", value: -2},{type: "ORE", value: -3}]);
     },
 
-    closeNodeModal: function () {
-      this.nodeModal = null;
+    click_tile: function(tile) {
+      this.placeBandit(tile);
     },
 
-    click_tile: function(data) {
-      console.log({"clicked-tile":data});
-      this.tileModal = data;
+    placeBandit: function (data) {
+      this.$emit("createAction", "placeBandit", data, []);
     },
 
-    placeBandit: function () {
-      this.$emit("createAction", "placeBandit", this.tileModal, []);
-      this.tileModal = null;
+    click_edge: function(edge) {
+      this.buildRoad(edge)
     },
 
-    closeTileModal: function () {
-      this.tileModal = null;
-    },
-
-    click_edge: function(data) {
-      console.log({"clicked-edge":data});
-      this.edgeModal = data;
-    },
-
-    buildRoad: function () {
-      this.$emit("createAction", "buildRoad", this.edgeModal, [{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
-      this.edgeModal = null;
-    },
-
-    closeEdgeModal: function () {
-      this.edgeModal = null;
+    buildRoad: function (edge) {
+      this.$emit("createAction", "buildRoad", edge, [{type: "WOOD", value: -1},{type: "STONE", value: -1}]);
     },
 
     getTile: function(x, y) {
-      var key = `[${x},${y}]`;
+      let key = `[${x},${y}]`;
       return this.tiles.find((item) => {
         return item.attributes.key == key;
       });
     },
 
     getEdge: function(a, b) {
-      var key = `(${a},${b})`;
+      let key = `(${a},${b})`;
       return this.edges.find((item) => {
         return item.attributes.key == key;
       });
@@ -440,14 +424,14 @@ export default {
     redrawHarbour: function(harbourBorder) {
       let self = this;
       harbourBorder.attr("d", self.path(topojson.mesh(self.topology, self.topology.objects.hexagons, function (a, b) {
-          var edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
-          var edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
+          let edge1 = self.getEdge(a.tile.attributes.key, b.tile.attributes.key);
+          let edge2 = self.getEdge(b.tile.attributes.key, a.tile.attributes.key);
           return (edge1 && edge1.attributes.harbour) || (edge2 && edge2.attributes.harbour);
       })));
     },
 
     hexProjection: function(radius) {
-      var dx = radius * 2 * Math.sin(Math.PI / 3),
+      let dx = radius * 2 * Math.sin(Math.PI / 3),
           dy = radius * 1.5;
 
       return {
@@ -474,23 +458,22 @@ export default {
     },
 
     hexTopology: function(radius, width, height) {
-      var dx = radius * 2 * Math.sin(Math.PI / 3),
+      let dx = radius * 2 * Math.sin(Math.PI / 3),
           dy = radius * 1.5,
           m = Math.ceil((height + radius) / dy) + 1,
           n = Math.ceil(width / dx) + 1,
           geometries = [],
           arcs = [];
 
-      for (var j = -1; j <= m; ++j) {
-        for (var i = -1; i <= n; ++i) {
-          var y = j * 2, x = (i + (j & 1) / 2) * 2;
+      for (let j = -1; j <= m; ++j) {
+        for (let i = -1; i <= n; ++i) {
+          let y = j * 2, x = (i + (j & 1) / 2) * 2;
           arcs.push([[x, y - 1], [1, 1]], [[x + 1, y], [0, 1]], [[x + 1, y + 1], [-1, 1]]);
         }
       }
 
-      var q;
-      for (j = 0, q = 3; j < m; ++j, q += 6) {
-        for (i = 0; i < n; ++i, q += 3) {
+      for (let j = 0, q = 3; j < m; ++j, q += 6) {
+        for (let i = 0; i < n; ++i, q += 3) {
           if (this.getTile(i - 1, j - 2)) {
             geometries.push({
               type: "Polygon",

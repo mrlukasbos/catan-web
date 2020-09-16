@@ -7,4 +7,31 @@
 @import "components/action-view";
 @import "components/modal";
 @import "components/resources-list";
+@import "components/settings-modal";
 
+
+code {
+    background: black;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.hint {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity .3s;
+
+    .hint-text {
+        color: white;
+        font-weight: bold;
+        height: 42px;
+        border-radius: 21px;
+        padding: 12px 36px;
+        background-color: rgba(20,20,20,0.9);
+        margin-top: 20px;
+    }
+}
