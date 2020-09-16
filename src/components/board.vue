@@ -13,7 +13,7 @@ import {T} from '../translations';
 
 export default {
   name: 'connect',
-  props: ['board', 'players', 'settings'],
+  props: ['board', 'players', 'settings', 'actions'],
 
   data: function() {
       return {
@@ -73,6 +73,19 @@ export default {
         this.draw_board();
         this.init = true;
       }
+    },
+    actions: function() {
+      let self = this;
+      this.actions.forEach(action => {
+        let key = action.object.key;
+        if (action.action === "buildRoad") {
+          let edge = self.getEdgeByKey(key);
+          edge.attributes.selected = true;
+        }
+      })
+      this.updateEdges();
+      this.updateTiles();
+      this.updateNodes();
     },
     lang: function() {
       this.updateTypes();
@@ -363,11 +376,15 @@ export default {
       this.d3_edges.attr("stroke", function (d) {
           if (d.attributes.road) {
             return d.attributes.player_color;
+          } else if (d.attributes.selected) {
+            return "#ff0000";
           }
           return "#fff";
         })
         .attr("class", function (d) {
           if (d.attributes.road) {
+            return "border border--road"
+          } else if (d.attributes.selected) {
             return "border border--road"
           } else {
             return "border border--empty"
@@ -381,6 +398,14 @@ export default {
       } else if (node.structure !== "VILLAGE" || node.structure !== "CITY") {
         this.buildVillage(node);
       }
+    },
+
+    removeAction: function(obj) {
+      let action = this.actions.find(action => {
+        return action.object.key === obj.key;
+      })
+      obj.selected = false;
+      this.$emit("removeAction", action);
     },
 
     buildVillage: function (node) {
@@ -400,7 +425,12 @@ export default {
     },
 
     click_edge: function(edge) {
-      this.buildRoad(edge)
+      if (edge.selected) {
+        this.removeAction(edge)
+        this.updateEdges(); // todo make this updateBoard or something
+      } else {
+        this.buildRoad(edge)
+      }
     },
 
     buildRoad: function (edge) {
@@ -416,7 +446,11 @@ export default {
 
     getEdge: function(a, b) {
       let key = `(${a},${b})`;
-      return this.edges.find((item) => {
+      return this.getEdgeByKey(key);
+    },
+
+    getEdgeByKey: function(key) {
+       return this.edges.find((item) => {
         return item.attributes.key == key;
       });
     },
@@ -424,6 +458,13 @@ export default {
     getHexByKey: function(key) {
       return this.topology.objects.hexagons.geometries.find((item) => {
         return item.tile.attributes.key == key;
+      });
+    },
+
+    getNode: function(a, b, c) {
+      let key = `(${a},${b},${c})`;
+      return this.nodes.find((item) => {
+        return item.attributes.key == key;
       });
     },
 

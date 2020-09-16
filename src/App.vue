@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <board :board="board" :players="players" :settings="settings" v-on:createAction="createAction"/>
+    <board :board="board" :players="players" :settings="settings" v-on:createAction="createAction" v-on:removeAction="removeAction" :actions="actions"/>
     <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :settings="settings"/>
     
     <action-view v-bind:class="{ 'action-view--visible': true }" :me="me" :actions="actions" :settings="settings" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
@@ -270,6 +270,12 @@ export default {
     },
     createAction: function (action, object, resources) {
       this.actions.push({action: action, object: object, resources: resources});
+    },
+    removeAction: function(action) {
+        const index = this.actions.indexOf(action);
+        if (index > -1) {
+            this.actions.splice(index, 1);
+        }
     }
   }
 }
