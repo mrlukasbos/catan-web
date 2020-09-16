@@ -53,16 +53,16 @@
             <a class="control clickable" v-if="connected && gameIsRunning" v-on:click="stop_game"> {{T("STOP_GAME")}} </a>
             <a class="control clickable" v-if="!joined" v-on:click="show_join_modal"> {{T("JOIN_GAME")}} </a>
             <a class="control clickable" v-if="joined" v-on:click="show_leave_modal"> {{T("LEAVE_GAME")}} </a>
-            <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected" :key="'connect-' + lang"/>
+            <connect v-on:connect="connect" v-on:disconnect="kill_socket" :connected="connected"/>
         </div>
     </div>
 
     <board :board="board" :players="players" :lang="lang" :dev_mode="dev_mode" v-on:createAction="createAction"/>
-    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode" :key="'players-view' + lang"/>
+    <players-view v-bind:class="{ 'players-view--visible': socket }" :players="players" :currentPlayerId="currentPlayerId" :dev_mode="dev_mode"/>
     
-    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :key="'action-view-' + lang" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
+    <action-view v-bind:class="{ 'action-view--visible': ownTurn }" :me="me" :actions="actions" :dev_mode="dev_mode" v-on:clearActions="clearActions" v-on:createAction="createAction" v-on:clientResponse="sendClientResponse"/>
     
-    <events-view :events="events" :players="players" :dev_mode="dev_mode" :key="'events-' + lang"/>
+    <events-view :events="events" :players="players" :dev_mode="dev_mode"/>
   </div>
 </template>
 
