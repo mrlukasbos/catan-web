@@ -42,7 +42,7 @@
         </div>
         <div class="control clickable" @click="settingsModalVisible = true">
           {{ T("SETTINGS") }}
-        </div>    
+        </div>
         <a v-if="connected && !gameIsRunning" class="control clickable" @click="start_game"> {{ T("START_GAME") }} </a>
         <a v-if="connected && gameIsRunning" class="control clickable" @click="stop_game"> {{ T("STOP_GAME") }} </a>
         <a v-if="!joined" class="control clickable" @click="joinModalVisible = true"> {{ T("JOIN_GAME") }} </a>
@@ -53,10 +53,12 @@
 
     <board :board="board" :players="players" :settings="settings" :actions="actions" @createAction="createAction" @removeAction="removeAction" />
     <players-view :class="{ 'players-view--visible': socket }" :players="players" :current-player-id="currentPlayerId" :settings="settings" />
-    
-    <action-view :class="{ 'action-view--visible': true }" :me="me" :actions="actions" :settings="settings" @clearActions="clearActions" @createAction="createAction" @clientResponse="sendClientResponse" />
-    
+
+    <action-view :class="{ 'action-view--visible': actionVisible }" :me="me" :actions="actions" :settings="settings" @clearActions="clearActions" @createAction="createAction" @clientResponse="sendClientResponse" />
+
     <force-discard-view :class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :settings="settings" @clientResponse="sendClientResponse" />
+
+    <trade-view :class="{ 'force-discard-view--visible': tradeVisible }" :me="me" :settings="settings" @clientResponse="sendClientResponse" />
 
     <events-view :events="events" :players="players" />
   </div>
@@ -72,6 +74,7 @@ import modal from './components/modal.vue'
 import forceDiscardView from './components/force-discard-view.vue'
 import {setGlobalLanguage} from './translations'
 import settingsModal from './components/settings-modal.vue'
+import tradeView from './components/trade-view.vue'
 
 export default {
   name: 'App',
@@ -83,7 +86,8 @@ export default {
     actionView,
     modal,
     settingsModal,
-    forceDiscardView
+    forceDiscardView,
+    tradeView
   },
 
   data: function() {
@@ -101,11 +105,11 @@ export default {
       joinModalVisible: false,
       leaveModalVisible: false,
       settingsModalVisible: false,
-      forceDiscardVisible: false,
       currentPlayerId: 1,
       recentResponse: null,
       game_status: "",
       game_phase: "",
+      game_phase_code: null,
       player: {
         id: -1,
         name: ""
@@ -128,7 +132,7 @@ export default {
     },
     ownTurn: function() {
       return this.player.id == this.currentPlayerId;
-    }, 
+    },
     gameIsRunning: function() {
       return this.game_status == "GAME_RUNNING";
     },
@@ -137,6 +141,15 @@ export default {
       return this.players.some(function(player) {
         return player.attributes.id == self.player.id;
       })
+    },
+    tradeVisible: function () {
+      return this.game_phase_code === 100;
+    },
+    forceDiscardVisible: function () {
+      return this.game_phase_code === 104;
+    },
+    actionVisible: function () {
+      return this.game_phase_code === 101 || this.game_phase_code === 102 || this.game_phase_code === 103;
     }
   },
 
@@ -205,21 +218,17 @@ export default {
 
     handleResponse: function(response) {
       this.recentResponse = response;
-      this.forceDiscardVisible = false;
+      this.game_phase_code = response.code;
+
       if (response.code == 1) { // ID ACK
         this.player.id = parseInt(response.additional_info);
         localStorage.setItem("name", this.player.name);
         localStorage.setItem("id", this.player.id);
       } else if (response.code == 100) { // trade request
-
       } else if (response.code == 101) { // build request
-
       } else if (response.code == 102) { // initial build request
-      
       } else if (response.code == 103) { // move bandit request
-      
       } else if (response.code == 104) { // discard resources request
-        this.forceDiscardVisible = true;
       }
     },
 

@@ -12,9 +12,6 @@
       <resources-list v-if="me" :resources="me.attributes.resources" size="medium" />
     </div>
     <div class="action-view__buttons">
-      <button class="action-view__trade-button">
-        {{ T("TRADE") }}
-      </button>
       <button class="action-view__development-button" @click="buyDevelopmentCard">
         {{ T("BUY_DEVELOPMENT") }}
       </button>
@@ -64,22 +61,22 @@ export default {
           self.$emit("clearActions");
           return;
         } else if (action.action === "buildVillage") {
-          buildRequest.push({ 
-            structure: "village", 
-            location: action.object.key 
+          buildRequest.push({
+            structure: "village",
+            location: action.object.key
           });
         } else if (action.action === "buildCity") {
-          buildRequest.push({ 
-            structure: "city", 
-            location: action.object.key 
+          buildRequest.push({
+            structure: "city",
+            location: action.object.key
           });
         } else if (action.action === "buildRoad") {
-          buildRequest.push({ 
-            structure: "street", 
-            location: action.object.key 
+          buildRequest.push({
+            structure: "street",
+            location: action.object.key
           });
         } else if (action.action === "buyDevelopmentCard") {
-          buildRequest.push({ 
+          buildRequest.push({
             structure: "development_card" });
         }
       });
