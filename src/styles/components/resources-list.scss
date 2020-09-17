@@ -3,24 +3,24 @@
 
 
   &--medium &__resource {
-    width: 36px;
     height: 56px;
+    width: 36px;
   }
 
   &--large &__resource {
-    width: 54px;
     height: 84px;
+    width: 54px;
   }
 
   &__resource {
-    font-weight: 100;
-    width: 18px;
-    height: 28px;
-    border-radius: 5%;
-    margin-right: 4px;
-    display: flex;
     align-items: center;
+    border: .5px solid #dcdcdc;
+    border-radius: 5%;
+    display: flex;
+    font-weight: 100;
+    height: 28px;
     justify-content: center;
-    border: .5px solid gainsboro;
+    margin-right: 4px;
+    width: 18px;
   }
 }
