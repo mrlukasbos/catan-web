@@ -24,6 +24,9 @@ npm run build
 ### Lints and fixes files
 ```
 npm run lint
+
+// or with autofix for bot sass-lint and eslint
+npm run lint:fix
 ```
 
 ### Customize configuration
