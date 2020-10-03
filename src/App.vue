@@ -204,7 +204,7 @@ export default {
     sendClientResponse: function(response) {
       let msg = {
         model: "client-response",
-        attributes: response
+        attributes: { response: response }
       }
 
       if (this.socket) {

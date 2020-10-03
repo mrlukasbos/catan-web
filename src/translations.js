@@ -59,7 +59,7 @@ t_EN["YOUR_FORCE_DISCARD"] = "discarding";
 t_EN["FINISH_DISCARD"] = "confirm discard";
 t_EN["SETTINGS"] = "settings";
 t_EN["LANGUAGE"] = "language";
-
+t_EN["YOUR_TRADE"] = "trading";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -112,6 +112,7 @@ t_NL["YOUR_FORCE_DISCARD"] = "kaarten afleggen";
 t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
+t_NL["YOUR_TRADE"] = "handelen";
 
 // lowercase translation
 function t(key) {
