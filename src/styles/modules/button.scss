@@ -1,37 +1,45 @@
 button {
-    background-color:  rgba(46, 167, 6, 1);
+    background-color: rgba(46, 167, 6, 1);
     border: 0;
     border-radius: 4px;
     color: #ffffff;
     cursor: pointer;
     font-weight: 600;
     height: 36px;
-    margin: 0;    
+    margin: 0;
     padding-left: 24px;
     padding-right: 24px;
-
     &:hover {
-        background-color:  rgb(41, 148, 5);
+        background-color: rgb(41, 148, 5);
         transition: background-color .12s;
+        &.WOOL {
+            background-color: darken( lawngreen, 5%);
+        }
+        &.WOOD {
+            background-color: darken( forestgreen, 5%);
+        }
+        &.STONE {
+            background-color: darken(rosybrown, 5%);
+        }
+        &.GRAIN {
+            background-color: darken( khaki, 5%);
+        }
+        &.ORE {
+            background-color: darken(lightgray, 5%);
+        }
     }
-
     &.primary {
-        background-color:  rgba(46, 167, 6, 1);
+        background-color: rgba(46, 167, 6, 1);
     }
-
     &.primary:hover {
-        background-color:  rgb(41, 148, 5);
+        background-color: rgb(41, 148, 5);
         transition: background-color .12s;
     }
-
     &.secondary {
-        background-color:  rgba(150, 150, 150, 1);
+        background-color: rgba(150, 150, 150, 1);
     }
-
     &.secondary:hover {
-        background-color:  rgba(150, 150, 150, .8);
+        background-color: rgba(150, 150, 150, .8);
         transition: background-color .12s;
     }
 }
-
-

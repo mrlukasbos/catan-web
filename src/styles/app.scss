@@ -1,16 +1,14 @@
 @import "variables";
-
 // modules
 @import "modules/button";
-
 // components
 @import "components/action-view";
 @import "components/force-discard-view";
 @import "components/modal";
 @import "components/resources-list";
 @import "components/settings-modal";
-
-
+@import "components/trade-view";
+@import "components/trade-action";
 code {
     background: #000000;
     color: #ffffff;
@@ -25,9 +23,8 @@ code {
     position: absolute;
     transition: opacity .3s;
     width: 100%;
-
     .hint-text {
-        background-color: rgba(20,20,20,0.9);
+        background-color: rgba(20, 20, 20, 0.9);
         border-radius: 21px;
         color: #ffffff;
         font-weight: bold;
