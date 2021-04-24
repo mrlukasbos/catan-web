@@ -3,11 +3,11 @@
     <div class="trade-action__resource" :class="resource">
       {{ ratio }}
     </div>
-    <span>➔</span>
-    <div class="trade-action__target" :class="resource" v-if="target">
+    <span class="trade-action__arrow">➔</span>
+    <div v-if="target" class="trade-action__target" :class="target">
       1
     </div>
-    <button v-else v-for="resource in otherResources" :key="resource.id" class="resources-list__resource-button" :class="resource.type"  @click="createTrade(resource)">
+    <button v-for="resource in otherResources" v-else :key="resource.id" class="trade-action__resource-button" :class="resource.type" @click="createTrade(resource)">
       1
     </button>
   </div>

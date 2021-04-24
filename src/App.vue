@@ -58,7 +58,7 @@
 
     <force-discard-view :class="{ 'force-discard-view--visible': forceDiscardVisible }" :me="me" :settings="settings" @clientResponse="sendClientResponse" />
 
-    <trade-view :class="{ 'force-discard-view--visible': tradeVisible }" :me="me" :settings="settings" @clientResponse="sendClientResponse" />
+    <trade-view :class="{ 'trade-view--visible': tradeVisible }" :me="me" :settings="settings" @clientResponse="sendClientResponse" />
 
     <events-view :events="events" :players="players" />
   </div>

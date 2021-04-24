@@ -1,0 +1,23 @@
+.trade-action {
+    display: flex;
+    &__resource,
+    &__target,
+    &__resource-button {
+        width: 18px;
+        height: 28px;
+        font-weight: 100;
+        border-radius: 5%;
+        margin-right: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: .5px solid gainsboro;
+    }
+    &__resource-button {
+        padding: 0;
+    }
+    &__arrow {
+        margin-right: 4px;
+        align-self: center;
+    }
+}

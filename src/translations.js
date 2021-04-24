@@ -60,6 +60,11 @@ t_EN["FINISH_DISCARD"] = "confirm discard";
 t_EN["SETTINGS"] = "settings";
 t_EN["LANGUAGE"] = "language";
 t_EN["YOUR_TRADE"] = "trading";
+t_EN["TRADE_OPTIONS"] = "possible trades";
+t_EN["TRADE_ACTIONS"] = "trade actions";
+t_EN["CLEAR_TRADE"] = "clear trade actions";
+t_EN["TRADE_RESULT"] = "trade result";
+t_EN["FINISH_TRADE"] = "finish trade";
 
 export var t_NL = new Map();
 t_NL["HARBOUR_WOOD"] = "hout haven";
@@ -113,13 +118,17 @@ t_NL["FINISH_DISCARD"] = "kaarten afleggen";
 t_NL["SETTINGS"] = "instellingen";
 t_NL["LANGUAGE"] = "taal";
 t_NL["YOUR_TRADE"] = "handelen";
+t_NL["TRADE_OPTIONS"] = "handelsopties";
+t_NL["TRADE_ACTIONS"] = "handelsacties";
+t_NL["CLEAR_TRADE"] = "verwijder handelsacties";
+t_NL["TRADE_RESULT"] = "handelsresultaat";
+t_NL["FINISH_TRADE"] = "handelen voltooien";
 
 // lowercase translation
 function t(key) {
   if (key === undefined) return "";
   var result;
-  if (lang == 'NL') { result = t_NL[key];}
-  else { result = t_EN[key];}
+  if (lang == 'NL') { result = t_NL[key]; } else { result = t_EN[key]; }
   return (result === undefined) ? key : result;
 }
 
@@ -133,4 +142,4 @@ function setGlobalLanguage(new_lang) {
   lang = new_lang;
 }
 
-export {t, T, setGlobalLanguage}
+export { t, T, setGlobalLanguage }
