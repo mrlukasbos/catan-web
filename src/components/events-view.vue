@@ -49,15 +49,17 @@
   </transition>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+
+import Vue from 'vue'
+
+export default Vue.extend({
   props: ['players', 'events'],
   computed: {
     formattedEvents: function () {
-      var self = this;
-      return this.events.map(function (evt) {
-        var player_id = evt.attributes.player;
-        var complete_player = self.players.filter(function (player) {
+      return this.events.map(evt => {
+        const player_id = evt.attributes.player;
+        const complete_player = self.players.filter(player => {
           return player.attributes.id == player_id;
         })[0];
         evt.attributes.player_full = complete_player;
@@ -65,7 +67,7 @@ export default {
       });
     }
   }
-}
+})
 </script>
 
 <style scoped>

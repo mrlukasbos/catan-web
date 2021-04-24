@@ -39,14 +39,17 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import ResourcesList from "./resources-list";
+import Vue from 'vue'
+import { Resource } from "../type/resource";
 
-export default {
+export default Vue.extend({
   components: {ResourcesList},
   props: ["me", "dev_mode"],
   data: function() {
     return {
+
       resourcesToDiscard: {
         "WOOL" : 0,
         "WOOD" : 0,
@@ -72,10 +75,10 @@ export default {
     }
   },
   methods: {
-    increment(type) {
+    increment(type: Resource) {
       this.resourcesToDiscard[type]++;
     },
-    decrement(type) {
+    decrement(type: Resource) {
       this.resourcesToDiscard[type]--;
     },
     sendClientResponse: function() {

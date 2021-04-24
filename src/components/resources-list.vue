@@ -6,11 +6,24 @@
   </div>
 </template>
 
-<script>
-export default {
-  props: ['resources', 'size'],
+<script lang="ts">
+
+import Vue from 'vue'
+// import { Resource } from '../type/resource';
+
+export default Vue.extend({
+  props: {
+    resources: {
+      type: Array,
+      default: new Array,
+    },
+    size: {
+      type: Number,
+      default: 0
+    },
+  },
   computed: {
-    sizeClass: function () {
+    sizeClass: function (): string {
       if (this.size == null) {
         return 'resources-list--small'
       } else {
@@ -18,5 +31,5 @@ export default {
       }
     }
   }
-}
+});
 </script>

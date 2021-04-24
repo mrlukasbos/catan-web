@@ -5,9 +5,12 @@ Contents:
     - EN
     - NL
 */
+
 import { Language } from './type/lang';
-export var lang = Language.EN;
-export var t_EN = new Map();
+
+export let lang = Language.EN;
+
+export const t_EN = new Map();
 t_EN.set("HARBOUR_WOOD", "wood harbour");
 t_EN.set("HARBOUR_STONE", "stone harbour");
 t_EN.set("HARBOUR_WOOL", "wool harbour");
@@ -58,7 +61,8 @@ t_EN.set("YOUR_FORCE_DISCARD", "discarding");
 t_EN.set("FINISH_DISCARD", "confirm discard");
 t_EN.set("SETTINGS", "settings");
 t_EN.set("LANGUAGE", "language");
-export var t_NL = new Map();
+
+export const t_NL = new Map();
 t_NL.set("HARBOUR_WOOD", "hout haven");
 t_NL.set("HARBOUR_STONE", "steen haven");
 t_NL.set("HARBOUR_WOOL", "wol haven");
@@ -109,25 +113,24 @@ t_NL.set("YOUR_FORCE_DISCARD", "kaarten afleggen");
 t_NL.set("FINISH_DISCARD", "kaarten afleggen");
 t_NL.set("SETTINGS", "instellingen");
 t_NL.set("LANGUAGE", "taal");
+
 // lowercase translation
-function t(key) {
-    if (key === undefined)
-        return "";
-    var result;
-    if (lang == Language.NL) {
-        result = t_NL.get(key);
-    }
-    else {
-        result = t_EN.get(key);
-    }
-    return (result === undefined) ? key : result;
+function t(key: string) {
+  if (key === undefined) return "";
+  var result;
+  if (lang == Language.NL) { result = t_NL.get(key);}
+  else { result = t_EN.get(key);}
+  return (result === undefined) ? key : result;
 }
+
 // uppercase translation
-function T(key) {
-    var str = t(key);
-    return str.charAt(0).toUpperCase() + str.slice(1);
+function T(key: string) {
+  var str = t(key);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
-function setGlobalLanguage(new_lang) {
-    lang = new_lang;
+
+function setGlobalLanguage(new_lang: Language) {
+  lang = new_lang;
 }
-export { t, T, setGlobalLanguage };
+
+export {t, T, setGlobalLanguage}

@@ -41,12 +41,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import ResourcesList from "./resources-list";
+import Vue from 'vue'
 
-export default {
+import { Player } from '../type/player';
+import { Settings } from '../type/settings';
+import { Action } from "../type/action";
+
+export default Vue.extend({
   components: {ResourcesList},
-  props: ["me", "actions", "settings"],
+  props: {
+    me: Player,
+    actions: {
+      type: Array(Action),
+      default: () => []
+    },
+    settings: Settings,
+  },
   methods: {
     buyDevelopmentCard: function () {
       this.$emit("createAction", "buyDevelopmentCard", null, [{type: "WOOL", value: -1},{type: "GRAIN", value: -1},{type: "ORE", value: -1}]);
@@ -55,13 +67,18 @@ export default {
       this.$emit("clearActions");
     },
     sendClientResponse: function() {
-      let buildRequest = [];
-      let self = this;
 
-      this.actions.forEach(function(action) {
+      type BuildRequest = {
+          structure: string,
+          location?: string,
+      }
+
+      let buildRequest: BuildRequest[] = [];
+
+      this.actions.forEach(action => {
         if (action.action === "placeBandit") {
-          self.$emit("clientResponse", [{location: action.object.key}]);
-          self.$emit("clearActions");
+          this.$emit("clientResponse", [{location: action.object.key}]);
+          this.$emit("clearActions");
           return;
         } else if (action.action === "buildVillage") {
           buildRequest.push({ 
@@ -88,5 +105,5 @@ export default {
       this.$emit("clearActions");
     }
   }
-}
+});
 </script>

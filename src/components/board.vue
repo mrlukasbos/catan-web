@@ -10,20 +10,15 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import {T} from '../translations';
+import Vue from 'vue'
 
+import { Structure } from '../type/structure';
 
-const Structure = {
-  VILLAGE: "VILLAGE",
-  CITY: "CITY",
-  ROAD: "ROAD",
-  NONE: "NONE"
-}
-
-export default {
+export default Vue.extend({
   name: 'Connect',
   props: ['board', 'players', 'settings', 'actions'],
 
@@ -582,7 +577,7 @@ export default {
       this.createBandits();     
     }
   }
-}
+});
 
 </script>
 

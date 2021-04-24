@@ -62,7 +62,9 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+
+import Vue from 'vue'
 import connect from './components/connect.vue'
 import board from './components/board.vue'
 import playersView from './components/players-view.vue'
@@ -73,7 +75,13 @@ import forceDiscardView from './components/force-discard-view.vue'
 import {setGlobalLanguage} from './translations'
 import settingsModal from './components/settings-modal.vue'
 
-export default {
+// types
+import { Event } from './type/event';
+import { Player } from './type/player';
+import { Action } from './type/action';
+import { Settings, defaultSettings } from './type/settings';
+
+export default Vue.extend({
   name: 'App',
   components: {
     connect,
@@ -86,15 +94,10 @@ export default {
     forceDiscardView
   },
 
-  data: function() {
+  data() {
     return {
-      settings: {
-        lang: "EN",
-        dev_mode: true,
-      },
       connected: false,
-      socket: null,
-      board: null,
+      socket: new WebSocket(''),
       players: [],
       events: [],
       actions: [],
@@ -106,36 +109,32 @@ export default {
       recentResponse: null,
       game_status: "",
       game_phase: "",
-      player: {
-        id: -1,
-        name: ""
-      }
-    }
+      player: null,
+      board: null,
+      settings: defaultSettings,
+    };
   },
 
   computed: {
-    currentPlayer: function() {
-      let self = this;
-      return this.players.find(function(player) {
-        return player.attributes.id === self.currentPlayerId;
+    currentPlayer: function(): Player | undefined {
+      return this.players.find(player => {
+        return player.id === this.currentPlayerId;
       })
     },
-    me: function() {
-      let self = this;
-      return this.players.find(function(player) {
-        return player.attributes.id == self.player.id;
+    me: function(): Player | undefined {
+      return this.players.find(player => {
+        return player.id == this.player.id;
       })
     },
-    ownTurn: function() {
+    ownTurn: function(): boolean {
       return this.player.id == this.currentPlayerId;
     }, 
-    gameIsRunning: function() {
+    gameIsRunning: function(): boolean {
       return this.game_status == "GAME_RUNNING";
     },
-    joined: function() {
-      let self = this;
-      return this.players.some(function(player) {
-        return player.attributes.id == self.player.id;
+    joined: function(): boolean {
+      return this.players.some(player => {
+        return player.id == this.player.id;
       })
     }
   },
@@ -147,11 +146,11 @@ export default {
   },
 
   methods: {
-    connect: function(ip, port) {
+    connect: function(ip: string, port: number) {
       this.kill_socket();
       this.socket = new WebSocket("ws://" + ip + ":" + port);
 
-      this.socket.onerror = (err) => {
+      this.socket.onerror = (err: any) => {
         alert("connection error " + err)
       }
 
@@ -169,13 +168,14 @@ export default {
         }
       }
 
-      this.socket.onmessage = (data) => {
+      this.socket.onmessage = (data: any) => {
         var message = data.data.toString();
         let json = JSON.parse(message);
 
         if (json.model == "game") {
           this.board = json.attributes.board.attributes;
-          this.players = json.attributes.players;
+          this.players = json.attributes.players.map((p: any) => p.attributes);
+
           this.currentPlayerId = json.attributes.currentPlayer;
           this.game_status = json.attributes.status;
           this.game_phase = json.attributes.phase;
@@ -188,7 +188,7 @@ export default {
         }
       }
     },
-    sendClientResponse: function(response) {
+    sendClientResponse: function(response: {}) {
       let msg = {
         model: "client-response",
         attributes: { 
@@ -205,7 +205,7 @@ export default {
       this.actions = [];
     },
 
-    handleResponse: function(response) {
+    handleResponse: function(response: {}) {
       this.recentResponse = response;
       this.forceDiscardVisible = false;
       if (response.code == 1) { // ID ACK
@@ -255,7 +255,7 @@ export default {
       }
     },
 
-    applySettings(newSettings) {
+    applySettings(newSettings: Settings) {
       this.settings = newSettings;
       setGlobalLanguage(this.settings.lang);
       this.$forceUpdate();
@@ -293,17 +293,17 @@ export default {
       this.socket.send(leaveMessage);
       this.leaveModalVisible = false;
     },
-    createAction: function (action, object, resources) {
+    createAction: function (action: Action, object: {}[], resources: Resource[]) {
       this.actions.push({action: action, object: object, resources: resources});
     },
-    removeAction: function(action) {
+    removeAction: function(action: Action) {
       const index = this.actions.indexOf(action);
       if (index > -1) {
         this.actions.splice(index, 1);
       }
     }
   }
-}
+});
 </script>
 
 <style>

@@ -7,8 +7,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   props: ["connected"],
   data: function() {
     return {
@@ -24,7 +26,7 @@ export default {
       this.$emit("disconnect");
     }
   }
-}
+});
 </script>
 
 <style scoped>
