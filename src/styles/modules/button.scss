@@ -1,14 +1,14 @@
 button {
-    border: none;
     background-color: rgba(46, 167, 6, 1);
-    height: 36px;
+    border: 0;
     border-radius: 4px;
-    color: white;
-    font-weight: 600;
-    padding-right: 24px;
-    padding-left: 24px;
-    margin: 0;
+    color: #ffffff;
     cursor: pointer;
+    font-weight: 600;
+    height: 36px;
+    margin: 0;
+    padding-left: 24px;
+    padding-right: 24px;
     &:hover {
         background-color: rgb(41, 148, 5);
         transition: background-color .12s;
